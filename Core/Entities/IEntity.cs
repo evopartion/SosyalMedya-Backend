@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace Core.Entities
 {
-    public class OperationClaim : IEntity
+    public interface IEntity
     {
-        public int ID { get; set; }
-        public string Name { get; set; }
+
     }
 }

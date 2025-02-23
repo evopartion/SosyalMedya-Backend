@@ -1,6 +1,8 @@
-﻿namespace Entities.Concrete
+﻿using Core.Entities;
+
+namespace Entities.Concrete
 {
-    public class Comment
+    public class Comment : IEntity
     {
         public int ID { get; set; }
         public int ArticleID { get; set; }
