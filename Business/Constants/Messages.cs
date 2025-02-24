@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DataAccess.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,5 +24,10 @@ namespace Business.Constants
         internal static string Topic_Deleted;
         internal static string Topic_List;
         internal static string Topics_List;
+        internal static string UserRegistered;
+        internal static User PasswordError;
+        internal static User UserNotFound;
+        internal static string SuccessfulLogin;
+        internal static string UserExist;
     }
 }
