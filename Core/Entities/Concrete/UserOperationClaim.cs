@@ -8,7 +8,6 @@ namespace Core.Entities.Concrete
 {
     public class UserOperationClaim : IEntity
     {
-        public object OperationClaimId;
 
         public int ID { get; set; }
         public int UserID { get; set; }

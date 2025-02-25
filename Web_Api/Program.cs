@@ -1,17 +1,19 @@
 using Autofac.Extensions.DependencyInjection;
 using Autofac;
 using Business.DependencyResolvers.Autofac;
+using Core.Utilities.Security.JWT;
 using Core.Utilities.Security.Encryption;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using Core.Utilities.Security.JWT;
-using Core.DepencyResolvers;
 using Core.Extensions;
 using Core.Utilities.IoC;
-using Microsoft.OpenApi.Models;
 using Core.Extensions.Exception;
+using Microsoft.OpenApi.Models;
+using Business.Concrete;
+using Core.DepencyResolvers;
 
 var builder = WebApplication.CreateBuilder(args);
+
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory()).ConfigureContainer<ContainerBuilder>(builder =>
 {
     builder.RegisterModule(new AutofacBusinessModule());
@@ -38,10 +40,12 @@ builder.Services.AddDependencyResolvers(new ICoreModule[]
     new CoreModule()
 });
 
-// Add services to the container.
+
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
+
+builder.Services.AddCors();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(swagger =>
 {
@@ -74,23 +78,35 @@ builder.Services.AddSwaggerGen(swagger =>
 });
 
 
+
 var app = builder.Build();
+
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
 app.ConfigureCustomExceptionMiddleware();
 
+
+
 app.UseHttpsRedirection();
-app.UseAuthentication();
+
+app.UseRouting();
+
 app.UseAuthentication();
 
 app.UseAuthorization();
 
+app.UseStaticFiles();
+
 app.MapControllers();
+
+
 
 app.Run();
