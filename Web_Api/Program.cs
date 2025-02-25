@@ -1,4 +1,16 @@
+using Autofac.Extensions.DependencyInjection;
+using Autofac;
+using Business.DependencyResolvers.Autofac;
+using Core.Utilities.Security.Encryption;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using Core.Utilities.Security.JWT;
+using Core.DepencyResolvers;
+using Core.Extensions;
+using Core.Utilities.IoC;
+
 var builder = WebApplication.CreateBuilder(args);
+
 
 // Add services to the container.
 

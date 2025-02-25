@@ -17,6 +17,7 @@ namespace Business.Abstract
         IResult UpdateByDto(UserDto userDto);
         IDataResult<List<UserDto>> GetAllDto();
         IDataResult<UserDto> GetUserDtoById(int userId);
+        IResult DeleteByID(int userId);
     }
 
 }

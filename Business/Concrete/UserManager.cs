@@ -1,5 +1,6 @@
 ﻿using Business.Abstract;
 using Business.Constants;
+using Core.Entities;
 using Core.Entities.Concrete;
 using Core.Utilities.Business;
 using Core.Utilities.Result.Abstract;
@@ -147,6 +148,18 @@ namespace Business.Concrete
         private bool BaseCheckIfEmailExist(string userEmail)
         {
             return _userDal.GetAll(x => x.Email == userEmail).Any();
+        }
+
+        public IResult DeleteByID(int userId)
+        {
+            var rulesResult = BusinessRules.Run(CheckIfUserIdExist(userId));
+            if (rulesResult != null)
+            {
+                return rulesResult;
+            }
+            var deletedUser = _userDal.Get(x => x.ID == userId);
+            _userDal.Delete(deletedUser);
+            return new SuccessResult(Messages.userDeleted);
         }
     }
 }
