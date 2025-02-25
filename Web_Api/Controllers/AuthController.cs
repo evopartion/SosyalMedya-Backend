@@ -15,6 +15,7 @@ namespace Web_Api.Controllers
         {
             _authService = authService;
         }
+        [HttpPost("login")]
         public IActionResult Login(UserForLoginDto userForLoginDto)
         {
             var userToLogin = _authService.Login(userForLoginDto);
@@ -27,6 +28,7 @@ namespace Web_Api.Controllers
 
             return result.Success ? Ok(result) : BadRequest(result);
         }
+        [HttpPost("register")]
         public IActionResult Register(UserForRegisterDto userForRegisterDto)
         {
             var userExists = _authService.UserExist(userForRegisterDto.Email);
