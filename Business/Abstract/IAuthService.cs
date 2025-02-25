@@ -1,6 +1,6 @@
-﻿using Core.Utilities.Result.Abstract;
+﻿using Core.Entities.Concrete;
+using Core.Utilities.Result.Abstract;
 using Core.Utilities.Security.JWT;
-using DataAccess.Entities;
 using Entities.DTOs;
 using System;
 using System.Collections.Generic;

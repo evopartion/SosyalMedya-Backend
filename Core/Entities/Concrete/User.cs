@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DataAccess.Entities
+namespace Core.Entities.Concrete
 {
-    public class User:IEntity
+    public class User : IEntity
     {
         public int ID { get; set; }
         public string FirstName { get; set; }

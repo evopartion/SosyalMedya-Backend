@@ -1,7 +1,6 @@
-﻿using Core.Entities;
+﻿using Core.Entities.Concrete;
 using Core.Service;
 using Core.Utilities.Result.Abstract;
-using DataAccess.Entities;
 using Entities.DTOs;
 using System;
 using System.Collections.Generic;
