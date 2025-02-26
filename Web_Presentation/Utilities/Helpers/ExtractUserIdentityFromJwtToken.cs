@@ -3,7 +3,7 @@ using System.Security.Claims;
 
 namespace Web_Presentation.Utilities.Helpers
 {
-    public class ExtractUserIdentityFromJwtToke
+    public class ExtractUserIdentityFromJwtToken
     {
         public static int GetUserIdentityFromJwtToken(string jwtToken)
         {

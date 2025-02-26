@@ -27,7 +27,7 @@ namespace Web_Presentation.Controllers
         }
 
         [HttpPost("LoginPost")]
-        public async Task<IActionResult> Login(UserForLogin userForLogin)
+        public async Task<IActionResult> LoginPost(UserForLogin userForLogin)
         {
             var httpClient = _httpClientFactory.CreateClient();
             var jsonLogin = JsonConvert.SerializeObject(userForLogin);
@@ -41,9 +41,9 @@ namespace Web_Presentation.Controllers
                 TempData["Success"]=userForLoginSuccess.Success;
                 var jwtToken = userForLoginSuccess.Data.Token;
                 var roleClaims = ExtractRoleClaimsFromJwtToken.GetRoleClaims(jwtToken);
-                var userId = ExtractRoleClaimsFromJwtToken.GetUserIdentityFromJwtToken(jwtToken);
+                var userId = ExtractUserIdentityFromJwtToken.GetUserIdentityFromJwtToken(jwtToken);
 
-                HttpContext.Session.SetInt32("UserId", (int)userId);
+                HttpContext.Session.SetInt32("UserId", userId);
                 return await SignInUserByRole(roleClaims);
             }
             else
