@@ -21,7 +21,9 @@ namespace DataAccess.Concrete.EntityFramework
                                  Id = A.ID,
                                  TopicId = A.TopicID,
                                  TopicTitle = T.TopicTitle,
+                                 Content=A.Content,
                                  UserId = A.UserID,
+                                 SharingDate=A.SharingDate.ToShortDateString(),
                                  UserName = U.FirstName + " " + U.LastName,
  
                                  CommentDetails = ((from C in context.Comments

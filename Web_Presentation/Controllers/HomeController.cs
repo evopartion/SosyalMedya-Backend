@@ -1,4 +1,6 @@
+using Entities.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System.Diagnostics;
 using Web_Presentation.Models;
 
@@ -6,9 +8,18 @@ namespace Web_Presentation.Controllers
 {
     public class HomeController : Controller
     {
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var httpClient=new HttpClient();
+            var responseMessage = await httpClient.GetAsync("https://localhost:44339/api/Articles/getarticlewithdetails");
+            if (responseMessage.IsSuccessStatusCode)
+            {
+                var jsonResponse = await responseMessage.Content.ReadAsStringAsync();
+                var apiDataResponse = JsonConvert.DeserializeObject<ApiDataResponse<ArticleDetail>>(jsonResponse);
+
+                return apiDataResponse.Success ? View(apiDataResponse.Data) : (IActionResult)View("veri gelmiyor");
+            }
+            return View("Veri gelmiyor");
         }
     }
 }

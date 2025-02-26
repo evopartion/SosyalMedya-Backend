@@ -44,8 +44,9 @@ builder.Services.AddDependencyResolvers(new ICoreModule[]
 
 builder.Services.AddControllers();
 
-
+// dýþardan istek almak için
 builder.Services.AddCors();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(swagger =>
 {
@@ -93,7 +94,8 @@ if (app.Environment.IsDevelopment())
 
 app.ConfigureCustomExceptionMiddleware();
 
-
+//
+app.UseCors(builder => builder.WithOrigins("https://localhost:44339").AllowAnyHeader());
 
 app.UseHttpsRedirection();
 
