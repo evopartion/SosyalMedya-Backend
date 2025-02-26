@@ -1,8 +1,73 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_HomeLayout.cshtml";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div id="mainContent" class="col-8 d-flex flex-wrap col-12 col-md-auto mb-2 align-items-start justify-content-center  p-1">
+
+    <div class="row py-3 border rounded-3 shadow ">
+        <form action="deneme.php" method="get">
+            <input id="summernote" type="text" class=" w-100" placeholder="Yorumunuz">
+            <button class="btn btn-outline-success float-end mt-2" type="submit">Paylaş</button>
+        </form>
+    </div>
+    <!-- paylaşılan içerik başlangıç -->
+    <div class="row mt-3">
+        <div class="contentUserImage col-2 justify-content-start h-50 py-1 px-1 text-center">
+            <div class="userImageArea border py-3 mb-4 mt-3  h-auto">
+                <a class="d-inline-flex align-items-center text-decoration-none" href="">
+                    <img src="~/sosyalMedya-Frontend/assets/image/melike.png" class="img-fluid img-thumbnail rounded-circle" width="50" height="50" alt="">
+                </a>
+                <h6>Sefa Çelik</h6>
+            </div>
+        </div>
+        <div class="contents col-10 border ps-3 py-3 ms-0 shadow">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis assumenda ducimus ex ratione. Esse, est. Necessitatibus, neque vero unde sint expedita voluptate provident, aspernatur veniam assumenda sequi c
+            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Est quae praesentium delectus illum impedit! Ab, quia, laborum reiciendis reprehenderit asperiores repellendus autem, eius saepe tempora repellat voluptatum ut rerum ex.
+
+            <div class="pt-3 ps-2 pe-2">
+                <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Yorumlar
+                </button>
+                <ul class="dropdown dropdown-menu comment w-50 h-50 overflow-auto px-3">
+                    <h4 class="text-center">Yorumlar</h4>
+                    <!-- Yorum Alanı Başlangıç -->
+                    <div class="d-flex flex-wrap col-12 col-md-auto mb-2 align-items-center justify-content-center">
+                        <div class="contentUserImage col-2 justify-content-start h-25 py-1 px-1 text-center">
+                            <div class="userImageArea border py-3 mb-4 mt-3 h-auto">
+                                <a class="d-inline-flex align-items-center text-decoration-none" href="#">
+                                    <img class="img-fluid rounded-circle " src="https://www.diken.com.tr/wp-content/uploads/2016/11/aleyna-tilki.jpg" width="50" height="50" alt="">
+                                </a>
+                                <h6>Sefa Çelik</h6>
+                            </div>
+                        </div>
+                        <div class="col-10 border ps-3 py-3 ms-0 shadow">
+                            Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ducimus quam, delectus repellendus placeat iure, impedit consequatur officia sunt mollitia nesciunt repudiandae, explicabo illo veritatis ratione! Doloremque recusandae aliquid quis voluptas.
+                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quibusdam dolorum voluptatum vel reiciendis. Libero repudiandae amet corrupti veritatis doloribus, nihil sequi culpa vero omnis architecto quam recusandae nisi. Pariatur, rerum?
+                        </div>
+                    </div>
+                    <!-- Yorum Alanı Bitiş -->
+                    
+    <!-- paylaşılan içerik bitiş -->
+   
+<div id="topRight" class="sticky-top col-2 h-50 text-center ms-1">
+    <div class="accordion mt-3" id="accordionPanelsStayOpenExample">
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button border border-primary" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true"
+                        aria-controls="panelsStayOpen-collapseOne">
+                    <i class="bi bi-hash"></i>Öne Çıkan Başlık
+                </button>
+            </h2>
+            <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show">
+                <div class="accordion-body">
+                    <i class="bi bi-share"><strong class="ps-1">15 </strong> Paylaşım Yapıldı</i>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
+
