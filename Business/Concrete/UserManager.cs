@@ -18,10 +18,15 @@ namespace Business.Concrete
     public class UserManager : IUserServices
     {
         private readonly IUserDal _userDal;
+        public UserManager(IUserDal userDal)
+        {
+            _userDal = userDal;
+        }
+
         public IResult Add(User entity)
         {
-            var rulesResult=BusinessRules.Run(CheckIfEmailExist(entity.Email));
-            if (rulesResult!=null)
+            var rulesResult = BusinessRules.Run(CheckIfEmailExist(entity.Email));
+            if (rulesResult != null)
             {
                 return rulesResult;
             }
@@ -31,14 +36,19 @@ namespace Business.Concrete
 
         public IResult Delete(User entity)
         {
-            var rulesResult=BusinessRules.Run(CheckIfUserIdExist(entity.ID));
-            if (rulesResult!=null)
+            var rulesResult = BusinessRules.Run(CheckIfUserIdExist(entity.ID));
+            if (rulesResult != null)
             {
                 return rulesResult;
             }
-            var deletedUser=_userDal.Get(x=> x.ID == entity.ID);
+            var deletedUser = _userDal.Get(x => x.ID == entity.ID);
             _userDal.Delete(deletedUser);
             return new SuccessResult(Messages.userDeleted);
+        }
+
+        public IResult DeleteByID(int userId)
+        {
+            throw new NotImplementedException();
         }
 
         public IDataResult<List<User>> GetAll()
@@ -53,12 +63,12 @@ namespace Business.Concrete
 
         public IDataResult<User> GetById(int id)
         {
-            var user = _userDal.Get(x=>x.ID==id);
-            if (user!=null)
+            var user = _userDal.Get(x => x.ID == id);
+            if (user != null)
             {
                 return new SuccessDataResult<User>(user, Messages.UserListed);
             }
-            return new SuccessDataResult<User>(Messages.UserNotExist);
+            return new ErrorDataResult<User>(Messages.UserNotExist);
         }
 
         public IDataResult<List<OperationClaim>> GetClaims(User user)
@@ -109,6 +119,8 @@ namespace Business.Concrete
 
             updatedUser.FirstName = userDto.FirstName;
             updatedUser.LastName = userDto.LastName;
+            updatedUser.Email = userDto.Email;
+
             _userDal.Update(updatedUser);
             return new SuccessResult(Messages.UserUpdated);
         }
@@ -148,18 +160,6 @@ namespace Business.Concrete
         private bool BaseCheckIfEmailExist(string userEmail)
         {
             return _userDal.GetAll(x => x.Email == userEmail).Any();
-        }
-
-        public IResult DeleteByID(int userId)
-        {
-            var rulesResult = BusinessRules.Run(CheckIfUserIdExist(userId));
-            if (rulesResult != null)
-            {
-                return rulesResult;
-            }
-            var deletedUser = _userDal.Get(x => x.ID == userId);
-            _userDal.Delete(deletedUser);
-            return new SuccessResult(Messages.userDeleted);
         }
     }
 }

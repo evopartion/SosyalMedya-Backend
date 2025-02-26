@@ -1,5 +1,7 @@
 ﻿using Core.Service;
+using Core.Utilities.Result.Abstract;
 using Entities.Concrete;
+using Entities.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,9 +10,9 @@ using System.Threading.Tasks;
 
 namespace Business.Abstract
 {
-        public interface IArticleServices : IServiceRepository<Article>
-        {
+    public interface IArticleServices : IServiceRepository<Article>
+    {
+        IDataResult<List<ArticleDetailDto>> GetArticleDetails();
+    }
 
-        }
-    
 }

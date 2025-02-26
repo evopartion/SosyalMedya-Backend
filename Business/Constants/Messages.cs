@@ -38,5 +38,8 @@ namespace Business.Constants
         public static string userDeleted="Kullanıcı Silindi";
         public static string UserAdded="Kullanıcı Eklendi";
         public static string AuthorizationDenied="Bu işlemi yapabilmek için yetkiniz yok";
+        public static string ArticleWithDetailListed;
+        public static string UserAlreadyExists;
+        public static string AccessTokenCreated;
     }
 }
