@@ -37,6 +37,7 @@ namespace DataAccess.Concrete.EntityFramework
                                                         UserId = C.UserID,
                                                         UserName = User.FirstName + " " + User.LastName,
                                                         CommentDate = C.CommentDate,
+                                                        Status= C.Status,
                                                     }).ToList()).Count == 0 ? new List<CommentDetailDto> { new CommentDetailDto { Id = -1, ArticleId = -1, CommentText = "Henüz yorum yapılmadı", CommentDate = DateTime.Now, UserId = -1, UserName = "" } }
                                             : (from C in context.Comments
                                                join User in context.Users on C.UserID equals User.ID
@@ -49,6 +50,7 @@ namespace DataAccess.Concrete.EntityFramework
                                                    CommentText = C.CommentText,
                                                    UserId = C.UserID,
                                                    CommentDate = C.CommentDate,
+                                                   Status = C.Status,
                                                }).ToList()
                              };
 

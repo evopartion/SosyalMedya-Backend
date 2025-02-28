@@ -8,6 +8,7 @@
         public string? UserName { get; set; }
         public string CommentText { get; set; }
         public DateTime CommentDate { get; set; }
+        public bool Status { get; set; }
 
     }
 }

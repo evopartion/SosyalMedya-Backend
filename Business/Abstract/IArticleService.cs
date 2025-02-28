@@ -13,6 +13,7 @@ namespace Business.Abstract
     public interface IArticleServices : IServiceRepository<Article>
     {
         IDataResult<List<ArticleDetailDto>> GetArticleDetails();
+        IDataResult<List<ArticleDetailDto>> GetArticleDetailsByUserId(int id);
     }
 
 }

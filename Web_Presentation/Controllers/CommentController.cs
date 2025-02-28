@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Entities.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
 using System.Text;
 using Web_Presentation.Models;
+using Entities.DTOs;
 
 namespace Web_Presentation.Controllers
 {
@@ -47,6 +49,25 @@ namespace Web_Presentation.Controllers
                 return RedirectToAction("Index", "Home");
             }
             return View();
+        }
+
+        [Authorize(Roles = "admin,user")]
+        [HttpGet("notification")]
+        public async Task<IActionResult> Notification()
+        {
+
+            int userId = HttpContext.Session.GetInt32("UserId") ?? 0;
+            ViewData["UserId"] = userId;
+            var responseMessage = await _httpClientFactory.CreateClient().GetAsync("https://localhost:44339/api/Articles/getarticlewithdetailsbyuserid?id=" + userId);
+            if (responseMessage.IsSuccessStatusCode)
+            {
+                var jsonResponse = await responseMessage.Content.ReadAsStringAsync();
+
+                var apiDataResponse = JsonConvert.DeserializeObject<ApiListDataResponse<ArticleDetail>>(jsonResponse);
+
+                return apiDataResponse.Success ? View(apiDataResponse.Data) : RedirectToAction("Index", "Home");
+            }
+            return RedirectToAction("Index", "Home");
         }
     }
 }
