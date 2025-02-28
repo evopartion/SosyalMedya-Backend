@@ -31,5 +31,22 @@ namespace Web_Presentation.Controllers
             }
             return RedirectToAction("Index", "Home");
         }
+
+        [Authorize(Roles = "admin,user")]
+        [HttpPost("delete-comment")]
+        public async Task<IActionResult> DeleteArticle(int id)
+        {
+            var httpClient = _httpClientFactory.CreateClient();
+            var token = HttpContext.Session.GetString("Token");
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var responseMessage = await httpClient.DeleteAsync("https://localhost:44339/api/Comments/delete?id=" + id);
+            if (responseMessage.IsSuccessStatusCode)
+            {
+                TempData["Message"] = "Yorum silindi";
+                TempData["Success"] = true;
+                return RedirectToAction("Index", "Home");
+            }
+            return View();
+        }
     }
 }

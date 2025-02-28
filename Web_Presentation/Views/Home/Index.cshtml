@@ -66,7 +66,14 @@
 											</div>
 										</div>
 										<div class="col-10 border ps-3 py-3 ms-0 shadow">
-											@comment.CommentText
+                                            @if (Convert.ToInt32(ViewData["UserId"]) == comment.UserId)
+                                                {
+                                                    <div>
+
+                                                        <button type="button" class="btn-close float-end delete-comment" data-comment="@comment.Id" data-bs-toggle="modal" data-bs-target="#staticBackdrop1"></button>
+                                                    </div>
+                                                }
+                                                @comment.CommentText
 										</div>
 									</div>
 								}
@@ -144,6 +151,35 @@
     </div>
 </div>
 
+<!-- Modal -->
+<div class="modal fade" id="staticBackdrop1" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel1">Yorum Siliniyor !</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="/delete-comment" method="post">
+
+                    <div class="input-group mt-3 mb-3">
+                        <input type="hidden" name="id" class="form-control" id="commentId">
+                        <span>Bu yorumu silmek istediğinize emin misiniz ?</span>
+                        <span>Bu işlemi geri alamazsınız !</span>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">İptal</button>
+                        <button type="submit" class="btn btn-success">Eminim Sil</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
 
 @section scripts {
     <script>
@@ -215,6 +251,12 @@
                 $("#articleId").val(ArticleId);
             })
 
+            $(".delete-comment").on("click", function (e) {
+                e.preventDefault();
+                var CommentId = $(this).data("comment");
+                console.log(CommentId);
+                $("#commentId").val(CommentId);
+            })
             
         });
     </script>
