@@ -12,7 +12,7 @@ namespace Core.Service
         IDataResult<List<T>> GetAll();
         IDataResult<T> GetById(int id);
         IResult Update(T entity);
-        IResult Delete(T entity);
+        IResult Delete(int id);
         IResult Add(T entity);
     }
 }

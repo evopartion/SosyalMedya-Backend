@@ -10,7 +10,7 @@ namespace Business.Constants
     public class Messages
     {
         public static string Article_Add="Paylaşım Yapıldı";
-        public static string Article_Deleted;
+        public static string Article_Deleted="İçerik Silindi";
         public static string Article_Edit;
         public static string Articleem_Listed;
         public static string Articleses_Listed;
@@ -52,6 +52,6 @@ namespace Business.Constants
         public static string UserImageListed;
         public static string UserImageLimitExceeded;
         public static string GetDefaultImage;
-        internal static string UserImageIdNotExistq;
+        public static string UserImageIdNotExistq;
     }
 }

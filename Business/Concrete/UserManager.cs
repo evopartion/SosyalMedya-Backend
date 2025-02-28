@@ -34,14 +34,14 @@ namespace Business.Concrete
             return new SuccessResult(Messages.UserAdded);
         }
 
-        public IResult Delete(User entity)
+        public IResult Delete(int id)
         {
-            var rulesResult = BusinessRules.Run(CheckIfUserIdExist(entity.ID));
+            var rulesResult = BusinessRules.Run(CheckIfUserIdExist(id));
             if (rulesResult != null)
             {
                 return rulesResult;
             }
-            var deletedUser = _userDal.Get(x => x.ID == entity.ID);
+            var deletedUser = _userDal.Get(x => x.ID == id);
             _userDal.Delete(deletedUser);
             return new SuccessResult(Messages.userDeleted);
         }

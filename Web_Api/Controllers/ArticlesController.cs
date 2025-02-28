@@ -48,9 +48,9 @@ namespace Web_Api.Controllers
         }
 
         [HttpDelete("delete")]
-        public ActionResult Delete(Article article)
+        public ActionResult Delete(int id)
         {
-            IResult result = _articleService.Delete(article);
+            IResult result = _articleService.Delete(id);
             return result.Success ? Ok(result) : BadRequest(result);
         }
     }

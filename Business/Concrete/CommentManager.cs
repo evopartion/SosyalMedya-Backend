@@ -5,6 +5,7 @@ using Core.Aspects.Autofac.Caching;
 using Core.Utilities.Result.Abstract;
 using Core.Utilities.Result.Concrete;
 using DataAccess.Abstract;
+using DataAccess.Concrete.EntityFramework;
 using Entities.Concrete;
 using System;
 using System.Collections.Generic;
@@ -31,9 +32,10 @@ namespace Business.Concrete
             return new SuccessResult(Messages.Comment_Add);
         }
 
-        public IResult Delete(Comment entity)
+        public IResult Delete(int id)
         {
-            _commentDal.Delete(entity);
+            var deleteComment = _commentDal.Get(x => x.ID == id);
+            _commentDal.Delete(deleteComment);
             return new SuccessResult(Messages.Comment_Delete);
         }
 

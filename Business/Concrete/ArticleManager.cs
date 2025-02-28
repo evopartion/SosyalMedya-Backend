@@ -40,9 +40,10 @@ namespace Business.Concrete
         [SecuredOperation("admin,user")]
         [CacheRemoveAspect("IArticleService.Get")]
         [LogAspect(typeof(FileLogger))]
-        public IResult Delete(Article entity)
+        public IResult Delete(int id)
         {
-            _articleDal.Delete(entity);
+            var deleteArticle=_articleDal.Get(x=>x.ID == id);
+            _articleDal.Delete(deleteArticle);
             return new SuccessResult(Messages.Article_Deleted);
         }
         // 10 dakika bellekte tut

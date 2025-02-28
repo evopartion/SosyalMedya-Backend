@@ -44,9 +44,9 @@ namespace Web_Api.Controllers
         }
 
         [HttpDelete("delete")]
-        public ActionResult Delete(Comment comment)
+        public ActionResult Delete(int id)
         {
-            IResult result = _commentService.Delete(comment);
+            IResult result = _commentService.Delete(id);
             return result.Success ? Ok(result) : BadRequest(result);
         }
     }

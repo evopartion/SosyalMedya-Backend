@@ -41,5 +41,22 @@ namespace Web_Presentation.Controllers
             var responseContent = await responseMessage.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<ApiDataResponse<Article>>(responseContent);
         }
+        [Authorize(Roles = "admin,user")]
+        [HttpPost("delete-article")]
+        public async Task<IActionResult> DeleteArticle(int id)
+        {
+            var httpClient = _httpClientFactory.CreateClient();
+            var token = HttpContext.Session.GetString("Token");
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var responseMessage = await httpClient.DeleteAsync("https://localhost:44339/api/Articles/delete?id=" + id);
+            if (responseMessage.IsSuccessStatusCode)
+            {
+                var sharedResponse = await GetSharedResponse(responseMessage);
+                TempData["Message"] = sharedResponse.Message;
+                TempData["Success"] = sharedResponse.Success;
+                return RedirectToAction("Index", "Home");
+            }
+            return View();
+        }
     }
 }
