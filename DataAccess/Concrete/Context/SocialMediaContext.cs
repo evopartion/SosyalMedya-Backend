@@ -1,4 +1,5 @@
-﻿using Core.Entities.Concrete;
+﻿using Core.Entities;
+using Core.Entities.Concrete;
 using Entities.Concrete;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -18,6 +19,7 @@ namespace DataAccess.Concrete.Context
         }
 
         public DbSet<User> Users { get; set; }
+        public DbSet<UserImage> UserImages { get; set; }
         public DbSet<UserOperationClaim> UserOperationClaims { get; set; }
         public virtual DbSet<OperationClaim> OperationClaims { get; set; }
         public DbSet<Article> Articles { get; set; }

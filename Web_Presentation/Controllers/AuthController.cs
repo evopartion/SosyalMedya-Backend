@@ -79,10 +79,10 @@ namespace Web_Presentation.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        private async Task<ApiAuthDataResponse<UserForLogin>> GetUserForLogin(HttpResponseMessage responseMessage)
+        private async Task<ApiDataResponse<UserForLogin>> GetUserForLogin(HttpResponseMessage responseMessage)
         {
             string responseContent = await responseMessage.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<ApiAuthDataResponse<UserForLogin>>(responseContent);
+            return JsonConvert.DeserializeObject<ApiDataResponse<UserForLogin>>(responseContent);
 
         }
     }

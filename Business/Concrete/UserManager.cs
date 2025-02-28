@@ -88,7 +88,7 @@ namespace Business.Concrete
 
         public IDataResult<UserDto> GetUserDtoById(int userId)
         {
-            return new SuccessDataResult<UserDto>(_userDal.GetUsersDtos(x => x.ID == userId).SingleOrDefault(), Messages.UserListed);
+            return new SuccessDataResult<UserDto>(_userDal.GetUsersDtos(x => x.Id == userId).SingleOrDefault(), Messages.UserListed);
         }
 
         public IResult Update(User entity)
@@ -105,13 +105,13 @@ namespace Business.Concrete
 
         public IResult UpdateByDto(UserDto userDto)
         {
-            var rulesResult = BusinessRules.Run(CheckIfUserIdExist(userDto.ID), CheckIfEmailAvailable(userDto.Email));
+            var rulesResult = BusinessRules.Run(CheckIfUserIdExist(userDto.Id), CheckIfEmailAvailable(userDto.Email));
             if (rulesResult != null)
             {
                 return rulesResult;
             }
 
-            var updatedUser = _userDal.Get(x => x.ID == userDto.ID && x.Email == userDto.Email);
+            var updatedUser = _userDal.Get(x => x.ID == userDto.Id && x.Email == userDto.Email);
             if (updatedUser == null)
             {
                 return new ErrorResult(Messages.UserNotFound);
@@ -120,6 +120,8 @@ namespace Business.Concrete
             updatedUser.FirstName = userDto.FirstName;
             updatedUser.LastName = userDto.LastName;
             updatedUser.Email = userDto.Email;
+            updatedUser.Gender = userDto.Gender;
+            updatedUser.PhoneNumber = userDto.PhoneNumber;
 
             _userDal.Update(updatedUser);
             return new SuccessResult(Messages.UserUpdated);

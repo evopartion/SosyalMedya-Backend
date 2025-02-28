@@ -1,5 +1,6 @@
 ﻿using Core.Utilities.Result.Abstract;
 using Core.Utilities.Result.Concrete;
+using Microsoft.AspNetCore.Http;
 using MimeDetective;
 using IResult = Core.Utilities.Result.Abstract.IResult;
 

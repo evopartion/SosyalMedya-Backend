@@ -44,7 +44,7 @@ namespace Web_Api.Controllers
             return result.Success ? Ok(result) : BadRequest(result);
         }
 
-        [HttpPut("update")]
+        [HttpPost("update")]
         public IActionResult Update(UserDto user)
         {
             IResult result = _userServices.UpdateByDto(user);

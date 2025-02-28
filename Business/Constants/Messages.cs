@@ -41,5 +41,17 @@ namespace Business.Constants
         public static string ArticleWithDetailListed;
         public static string UserAlreadyExists;
         public static string AccessTokenCreated;
+        public static string UserImageAdded;
+        public static string ErrorDeletingImage;
+        public static string UserImageDeleted;
+        public static string NoPictureOfTheUser;
+        public static string UserImageUpdated;
+        public static string ErrorUpdatingImage;
+        public static string UserImageIdNotExist;
+        public static string UserImagesListed;
+        public static string UserImageListed;
+        public static string UserImageLimitExceeded;
+        public static string GetDefaultImage;
+        internal static string UserImageIdNotExistq;
     }
 }

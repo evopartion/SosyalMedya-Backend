@@ -11,6 +11,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using Core;
+using Core.Entities;
 
 namespace DataAccess.Concrete.EntityFramework
 {
@@ -34,16 +35,20 @@ namespace DataAccess.Concrete.EntityFramework
             using (var context = new SocialMediaContext())
             {
                 var result = from user in context.Users
+                             join userImage in context.UserImages on user.ID equals userImage.UserId into userImagesGroup
+                             from userImage in userImagesGroup.DefaultIfEmpty()
 
                              select new UserDto
                              {
-                                 ID = user.ID,
+                                 Id = user.ID,
                                  Email = user.Email,
                                  FirstName = user.FirstName,
                                  LastName = user.LastName,
-
+                                 Gender = user.Gender,
+                                 PhoneNumber = user.PhoneNumber,
+                                 ImageId = userImage.Id,
+                                 ImagePath = userImage != null ? userImage.ImagePath : string.Empty
                              };
-
                 return filter == null
                     ? result.ToList()
                     : result.Where(filter).ToList();

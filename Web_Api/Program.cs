@@ -104,6 +104,8 @@ app.UseRouting();
 app.UseAuthentication();
 
 app.UseAuthorization();
+// file upload için
+app.UseStaticFiles();
 
 app.UseStaticFiles();
 
