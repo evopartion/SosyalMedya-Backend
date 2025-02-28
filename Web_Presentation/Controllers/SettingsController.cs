@@ -58,6 +58,45 @@ namespace Web_Presentation.Controllers
             }
         }
 
+        [HttpPost("photo-update")]
+        public async Task<IActionResult> UpdateUserImage(UserImage userImage)
+        {
+            if (userImage.ImagePath != null)
+            {
+                using (var formContent = new MultipartFormDataContent())
+                {
+                    formContent.Add(new StringContent(userImage.Id.ToString()), "Id");
+                    formContent.Add(new StringContent(userImage.UserId.ToString()), "UserId");
+                    formContent.Add(new StringContent(userImage.ImagePath.FileName), "ImagePath");
+                    formContent.Add(new StreamContent(userImage.ImagePath.OpenReadStream())
+                    {
+                        Headers =
+                        {
+                            ContentLength=userImage.ImagePath.Length,
+                            ContentType=new MediaTypeHeaderValue(userImage.ImagePath.ContentType)
+                        }
+                    },
+                    "ImageFile", userImage.ImagePath.FileName);
+
+                    //var httpClient = _httpClientFactory.CreateClient();
+                    //var token = HttpContext.Session.GetString("Token");
+                    //httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    var responseMesssage = await _httpClientFactory.CreateClient().PostAsync("https://localhost:44339/api/UserImages/update", formContent);
+                    var successUpdatedUserImage = await GetUpdateUserImageResponseMessage(responseMesssage);
+                    TempData["Message"] = successUpdatedUserImage.Message;
+                    TempData["Success"] = successUpdatedUserImage.Success;
+
+                    return RedirectToAction("AccountSetting", "Settings");
+                }
+            }
+            return RedirectToAction("AccountSetting", "Settings");
+        }
+
+        private async Task<ApiDataResponse<UserImage>> GetUpdateUserImageResponseMessage(HttpResponseMessage responseMessage)
+        {
+            var responseContent = await responseMessage.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<ApiDataResponse<UserImage>>(responseContent);
+        }
         private async Task<ApiDataResponse<UserDto>> GetUpdateUserResponseMessage(HttpResponseMessage responseMessage)
         {
             var responseContent = await responseMessage.Content.ReadAsStringAsync();
