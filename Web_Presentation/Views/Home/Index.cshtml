@@ -67,12 +67,12 @@
 							<!-- Yorum Alanı bitiş -->
 
 							<div class="dropdown-item w-100 mb-3">
-								<form action="#" method="post">
-									<label for="commentText">Yorumunuz : </label>
-									<input type="text" name="comment" id="commentText" class="form-control" placeholder="Yorumunuzu buraya yazın">
-									<button type="button" class="btn btn-success float-end mt-2 mb-2">Yorum Yap</button>
-								</form>
-							</div>
+                                <form action="#" method="post">
+                                    <label for="commentText">Yorumunuz : </label>
+                                    <input type="text" name="CommentText" class="form-control" placeholder="Yorumunuzu buraya yazın">
+                                    <button type="button" class="btn btn-success float-end mt-2 mb-2 comment-form" data-id="@articleDetail.Id">Yorum Yap</button>
+                                </form>
+                            </div
 						</ul>
 						<button class="btn btn-outline-secondary float-end">@articleDetail.SharingDate</button>
 					</div>
@@ -113,7 +113,33 @@
     <script>
         $(document).ready(function () {
             $(".contents > * > img").addClass("img-fluid");
-		});
+
+            $(".comment-form").on("click", function (e) {
+                e.preventDefault();
+                var form = $(this).closest("form");
+                var ArticleId = $(this).data("id");
+                var UserId = @ViewData["UserId"];
+                var CommentText = form.find("input[name=CommentText]").val();
+                var CommentDate = new Date().toLocaleString();
+                console.log(ArticleId + ", " + UserId + " , " + CommentText + " , " + CommentDate);
+
+                $.ajax({
+                    type: "POST",
+                    url: "/post-comment",
+                    data: {
+                        ArticleId: ArticleId,
+                        UserId: UserId,
+                        CommentText: CommentText,
+                        CommentDate: CommentDate
+                    },
+                    success: function (response) {
+                        window.location.reload();
+                    }, error: function (xhr, status, error) {
+                        console.log(error);
+                    }
+                })
+            })
+			});
 						</script>
 
 }

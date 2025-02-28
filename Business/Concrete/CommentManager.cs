@@ -1,5 +1,7 @@
 ﻿using Business.Abstract;
+using Business.BusinessAspects.Autofac;
 using Business.Constants;
+using Core.Aspects.Autofac.Caching;
 using Core.Utilities.Result.Abstract;
 using Core.Utilities.Result.Concrete;
 using DataAccess.Abstract;
@@ -21,7 +23,8 @@ namespace Business.Concrete
         {
             _commentDal = commentDal;
         }
-
+        [SecuredOperation("admin,user")]
+        [CacheRemoveAspect("IArticleService.Get")]
         public IResult Add(Comment entity)
         {
             _commentDal.Add(entity);
