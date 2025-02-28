@@ -21,7 +21,9 @@ namespace Web_Presentation.Controllers
                 var jsonResponse = await responseMessage.Content.ReadAsStringAsync();
                 var apiDataResponse = JsonConvert.DeserializeObject<ApiListDataResponse<ArticleDetailDto>>(jsonResponse);
 
-
+                int myArticle = apiDataResponse.Data.Count(x => x.UserId == Convert.ToInt32(ViewData["UserId"]));
+                HttpContext.Session.SetInt32("MyArticle", myArticle);
+                ViewData["MyArticle"] = myArticle;
 
                 return apiDataResponse.Success ? View(apiDataResponse.Data) : (IActionResult)View("veri gelmiyor");
             }
