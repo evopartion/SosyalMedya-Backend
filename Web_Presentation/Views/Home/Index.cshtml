@@ -10,6 +10,12 @@
 
     <div class="row py-3 border rounded-3 shadow ">
         <form action="deneme.php" method="get">
+
+            <div class="form-group w-100 mb-3">
+                <label for="topic" class="d-block fw-bold">Bir Konu Şeçiniz:</label>
+                @await Component.InvokeAsync("_FormTopic")
+            </div>
+
             <input id="summernote" type="text" class=" w-100" placeholder="Yorumunuz">
             <button class="btn btn-outline-success float-end mt-2" type="submit">Paylaş</button>
         </form>
