@@ -1,110 +1,119 @@
 ﻿@using Entities.DTOs
 @model List<ArticleDetailDto>
 @{
-    ViewData["Title"] = "Index";
-    Layout = "~/Views/Shared/_HomeLayout.cshtml";
+	ViewData["Title"] = "Index";
+	Layout = "~/Views/Shared/_HomeLayout.cshtml";
 }
 
 
 <div id="mainContent" class="col-8 d-flex flex-wrap col-12 col-md-auto mb-2 align-items-start justify-content-center  p-1">
 
-    <div class="row py-3 border rounded-3 shadow ">
-        <form action="deneme.php" method="get">
+	<div class="row py-3 border rounded-3 shadow ">
+		<form action="/share-content" method="post">
+			<input type="hidden" value="@ViewData["UserId"]" name="UserId" />
+			<input type="hidden" value="@DateTime.Now" name="SharingDate" />
+			<div class="form-group w-100 mb-3">
+				<label for="topic" class="d-block fw-bold">Bir Konu Şeçiniz:</label>
+				@await Component.InvokeAsync("_FormTopic")
+			</div>
 
-            <div class="form-group w-100 mb-3">
-                <label for="topic" class="d-block fw-bold">Bir Konu Şeçiniz:</label>
-                @await Component.InvokeAsync("_FormTopic")
-            </div>
+			<textarea id="summernote" type="text" class=" w-100" name="Content"></textarea>
+			<button class="btn btn-outline-success float-end mt-2" type="submit">Paylaş</button>
+		</form>
+	</div>
+	<!-- paylaşılan içerik başlangıç -->
+	@if (Model != null && Model.Any())
+	{
+		foreach (var articleDetail in Model)
+		{
+			<div class="row mt-3 w-100">
+				<div class="contentUserImage col-2 justify-content-start h-50 py-1 px-1 text-center">
+					<div class="userImageArea border py-3 mb-4 mt-3  h-auto">
+						<a class="d-inline-flex align-items-center text-decoration-none" href="">
+							<img src="~/sosyalMedya-Frontend/assets/image/melike.png" class="img-fluid img-thumbnail rounded-circle" width="50" height="50" alt="">
+						</a>
+						<h6>@articleDetail.UserName</h6>
+					</div>
+				</div>
+				<div class="contents col-10 border ps-3 py-3 ms-0 shadow">
+					@Html.Raw(articleDetail.Content)
 
-            <input id="summernote" type="text" class=" w-100" placeholder="Yorumunuz">
-            <button class="btn btn-outline-success float-end mt-2" type="submit">Paylaş</button>
-        </form>
-    </div>
-    <!-- paylaşılan içerik başlangıç -->
-    @if (Model != null && Model.Any())
-    {
-        foreach (var articleDetail in Model)
-        {
-            <div class="row mt-3 w-100">
-                <div class="contentUserImage col-2 justify-content-start h-50 py-1 px-1 text-center">
-                    <div class="userImageArea border py-3 mb-4 mt-3  h-auto">
-                        <a class="d-inline-flex align-items-center text-decoration-none" href="">
-                            <img src="~/sosyalMedya-Frontend/assets/image/melike.png" class="img-fluid img-thumbnail rounded-circle" width="50" height="50" alt="">
-                        </a>
-                        <h6>@articleDetail.UserName</h6>
-                    </div>
-                </div>
-                <div class="contents col-10 border ps-3 py-3 ms-0 shadow">
-                    @articleDetail.Content
+					<div class="pt-3 ps-2 pe-2">
+						<button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+							Yorumlar
+						</button>
+						<ul class="dropdown dropdown-menu comment w-50 h-50 overflow-auto px-3">
+							<h4 class="text-center">Yorumlar</h4>
+							<!-- Yorum Alanı Başlangıç -->
+							@if (articleDetail.CommentDetails != null && articleDetail.CommentDetails.Any())
+							{
+								@foreach (var comment in articleDetail.CommentDetails)
+								{
+									<div class="d-flex flex-wrap col-12 col-md-auto mb-2 align-items-center justify-content-center">
+										<div class="contentUserImage col-2 justify-content-start h-25 py-1 px-1 text-center">
+											<div class="userImageArea border py-3 mb-4 mt-3 h-auto">
+												<a class="d-inline-flex align-items-center text-decoration-none" href="#">
+													<img class="img-fluid rounded-circle " src="https://img.piri.net/mnresize/900/-/resim/upload/2018/11/12/05/44/d3aaf27aaleynatilkininsonpaylasimininardindanhayranlaribukizhicbuyumeyecekdedi_01533122848.jpg" width="50" height="50" alt="">
+												</a>
+												<h6>@comment.UserName</h6>
+											</div>
+										</div>
+										<div class="col-10 border ps-3 py-3 ms-0 shadow">
+											@comment.CommentText
+										</div>
+									</div>
+								}
+							}
+							<!-- Yorum Alanı bitiş -->
 
-                    <div class="pt-3 ps-2 pe-2">
-                        <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Yorumlar
-                        </button>
-                        <ul class="dropdown dropdown-menu comment w-50 h-50 overflow-auto px-3">
-                            <h4 class="text-center">Yorumlar</h4>
-                            <!-- Yorum Alanı Başlangıç -->
-                            @if (articleDetail.CommentDetails != null && articleDetail.CommentDetails.Any())
-                            {
-                                @foreach (var comment in articleDetail.CommentDetails)
-                                {
-                                    <div class="d-flex flex-wrap col-12 col-md-auto mb-2 align-items-center justify-content-center">
-                                        <div class="contentUserImage col-2 justify-content-start h-25 py-1 px-1 text-center">
-                                            <div class="userImageArea border py-3 mb-4 mt-3 h-auto">
-                                                <a class="d-inline-flex align-items-center text-decoration-none" href="#">
-                                                    <img class="img-fluid rounded-circle " src="https://img.piri.net/mnresize/900/-/resim/upload/2018/11/12/05/44/d3aaf27aaleynatilkininsonpaylasimininardindanhayranlaribukizhicbuyumeyecekdedi_01533122848.jpg" width="50" height="50" alt="">
-                                                </a>
-                                                <h6>@comment.UserName</h6>
-                                            </div>
-                                        </div>
-                                        <div class="col-10 border ps-3 py-3 ms-0 shadow">
-                                            @comment.CommentText
-                                        </div>
-                                    </div>
-                                }
-                            }
-                            <!-- Yorum Alanı bitiş -->
+							<div class="dropdown-item w-100 mb-3">
+								<form action="#" method="post">
+									<label for="commentText">Yorumunuz : </label>
+									<input type="text" name="comment" id="commentText" class="form-control" placeholder="Yorumunuzu buraya yazın">
+									<button type="button" class="btn btn-success float-end mt-2 mb-2">Yorum Yap</button>
+								</form>
+							</div>
+						</ul>
+						<button class="btn btn-outline-secondary float-end">@articleDetail.SharingDate</button>
+					</div>
+				</div>
 
-                            <div class="dropdown-item w-100 mb-3">
-                                <form action="#" method="post">
-                                    <label for="commentText">Yorumunuz : </label>
-                                    <input type="text" name="comment" id="commentText" class="form-control" placeholder="Yorumunuzu buraya yazın">
-                                    <button type="button" class="btn btn-success float-end mt-2 mb-2">Yorum Yap</button>
-                                </form>
-                            </div>
-                        </ul>
-                        <button class="btn btn-outline-secondary float-end">@articleDetail.SharingDate</button>
-                    </div>
-                </div>
+			</div>
+		}
+	}
+	else
+	{
+		<p>No data available.</p>
+	}
 
-            </div>
-        }
-    }
-    else
-    {
-        <p>No data available.</p>
-    }
-
-    <!-- paylaşılan içerik bitiş -->
+	<!-- paylaşılan içerik bitiş -->
 </div>
-   
+
 <div id="topRight" class="sticky-top col-2 h-50 text-center ms-1">
-    <div class="accordion mt-3" id="accordionPanelsStayOpenExample">
-        <div class="accordion-item">
-            <h2 class="accordion-header">
-                <button class="accordion-button border border-primary" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true"
-                        aria-controls="panelsStayOpen-collapseOne">
-                    <i class="bi bi-hash"></i>Öne Çıkan Başlık
-                </button>
-            </h2>
-            <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show">
-                <div class="accordion-body">
-                    <i class="bi bi-share"><strong class="ps-1">15 </strong> Paylaşım Yapıldı</i>
-                </div>
-            </div>
-        </div>
-    </div>
+	<div class="accordion mt-3" id="accordionPanelsStayOpenExample">
+		<div class="accordion-item">
+			<h2 class="accordion-header">
+				<button class="accordion-button border border-primary" type="button" data-bs-toggle="collapse"
+						data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true"
+						aria-controls="panelsStayOpen-collapseOne">
+					<i class="bi bi-hash"></i>Öne Çıkan Başlık
+				</button>
+			</h2>
+			<div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show">
+				<div class="accordion-body">
+					<i class="bi bi-share"><strong class="ps-1">15 </strong> Paylaşım Yapıldı</i>
+				</div>
+			</div>
+		</div>
+	</div>
 
 </div>
 
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            $(".contents > * > img").addClass("img-fluid");
+		});
+						</script>
+
+}

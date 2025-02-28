@@ -17,6 +17,7 @@ namespace Web_Presentation.Controllers
             var responseMessage = await httpClient.GetAsync("https://localhost:44339/api/Articles/getarticlewithdetails");
             if (responseMessage.IsSuccessStatusCode)
             {
+                ViewData["UserId"] = HttpContext.Session.GetInt32("UserId");
                 var jsonResponse = await responseMessage.Content.ReadAsStringAsync();
                 var apiDataResponse = JsonConvert.DeserializeObject<ApiListDataResponse<ArticleDetailDto>>(jsonResponse);
 

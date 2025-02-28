@@ -43,6 +43,7 @@ namespace Web_Presentation.Controllers
                 var roleClaims = ExtractRoleClaimsFromJwtToken.GetRoleClaims(jwtToken);
                 var userId = ExtractUserIdentityFromJwtToken.GetUserIdentityFromJwtToken(jwtToken);
 
+                HttpContext.Session.SetString("Token", jwtToken);
                 HttpContext.Session.SetInt32("UserId", userId);
                 return await SignInUserByRole(roleClaims);
             }
