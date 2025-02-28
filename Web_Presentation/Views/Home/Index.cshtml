@@ -36,10 +36,13 @@
 					</div>
 				</div>
 				<div class="contents col-10 border ps-3 py-3 ms-0 shadow">
-                    <div>
+                    @if (Convert.ToInt32(ViewData["UserId"])==articleDetail.UserId)
+                    {
+                        <div>
                         <span class="fw-bold"><i>#@articleDetail.TopicTitle</i></span>
                         <button type="button" class="btn-close float-end delete-article" data-article="@articleDetail.Id" data-bs-toggle="modal" data-bs-target="#staticBackdrop">fot gün</button>
                     </div>
+                    }
 					@Html.Raw(articleDetail.Content)
 
 					<div class="pt-3 ps-2 pe-2">
