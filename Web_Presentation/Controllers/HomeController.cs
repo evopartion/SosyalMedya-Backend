@@ -21,6 +21,8 @@ namespace Web_Presentation.Controllers
                 var jsonResponse = await responseMessage.Content.ReadAsStringAsync();
                 var apiDataResponse = JsonConvert.DeserializeObject<ApiListDataResponse<ArticleDetailDto>>(jsonResponse);
 
+
+
                 return apiDataResponse.Success ? View(apiDataResponse.Data) : (IActionResult)View("veri gelmiyor");
             }
             return View("Veri gelmiyor");

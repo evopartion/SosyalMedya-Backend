@@ -2,6 +2,7 @@
 {
     public class Article
     {
+        public int Id { get; set; }
         public int TopicID { get; set; }
         public int UserID { get; set; }
         public int? CommentID { get; set; }
