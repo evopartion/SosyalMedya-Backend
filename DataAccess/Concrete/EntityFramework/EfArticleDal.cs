@@ -22,13 +22,17 @@ namespace DataAccess.Concrete.EntityFramework
                                  Id = A.ID,
                                  TopicId = A.TopicID,
                                  TopicTitle = T.TopicTitle,
-                                 Content=A.Content,
                                  UserId = A.UserID,
-                                 SharingDate=A.SharingDate.ToShortDateString(),
+                                 Content = A.Content,
                                  UserName = U.FirstName + " " + U.LastName,
- 
+                                 SharingDate = A.SharingDate.ToShortDateString(),
+                                 UserImage = ((from I in context.UserImages
+                                               join user in context.Users on I.UserId equals user.ID
+                                               where (A.UserID == I.UserId)
+                                               select I.ImagePath)).First(),
                                  CommentDetails = ((from C in context.Comments
                                                     join User in context.Users on C.UserID equals User.ID
+                                                    join uimg in context.UserImages on C.UserID equals uimg.UserId
                                                     where (A.ID == C.ArticleID)
                                                     select new CommentDetailDto
                                                     {
@@ -37,21 +41,25 @@ namespace DataAccess.Concrete.EntityFramework
                                                         CommentText = C.CommentText,
                                                         UserId = C.UserID,
                                                         UserName = User.FirstName + " " + User.LastName,
+                                                        Image = uimg.ImagePath,
                                                         CommentDate = C.CommentDate,
-                                                        Status= C.Status,
-                                                    }).ToList()).Count == 0 ? new List<CommentDetailDto> { new CommentDetailDto { Id = -1, ArticleId = -1, CommentText = "Henüz yorum yapılmadı", CommentDate = DateTime.Now, UserId = -1, UserName = "" } }
+                                                        Status = C.Status
+                                                    }).ToList()).Count == 0 ? new List<CommentDetailDto> { new CommentDetailDto { Id = -1, ArticleId = -1, CommentText = "Henüz yorum yapılmadı", CommentDate = DateTime.Now, UserId = -1, UserName = "", Image = "images/default.jpg" } }
                                             : (from C in context.Comments
                                                join User in context.Users on C.UserID equals User.ID
+                                               join uimg in context.UserImages on C.UserID equals uimg.UserId
                                                where (A.ID == C.ArticleID)
                                                select new CommentDetailDto
                                                {
                                                    Id = C.ID,
                                                    ArticleId = C.ArticleID,
-                                                   UserName = User.FirstName + " " + User.LastName,
-                                                   CommentText = C.CommentText,
                                                    UserId = C.UserID,
+                                                   UserName = User.FirstName + " " + User.LastName,
+                                                   Image = uimg.ImagePath,
+                                                   CommentText = C.CommentText,
+                                                   
                                                    CommentDate = C.CommentDate,
-                                                   Status = C.Status,
+                                                   Status = C.Status
                                                }).ToList()
                              };
 
@@ -59,7 +67,7 @@ namespace DataAccess.Concrete.EntityFramework
             }
         }
 
-        public ArticleDetailDto GetArticleDetailsById(Expression<Func<ArticleDetailDto, bool>> filter = null)
+        public ArticleDetailDto GetArticleDetailsById(Expression<Func<ArticleDetailDto, bool>> filter)
         {
             using (var context = new SocialMediaContext())
             {
@@ -83,27 +91,27 @@ namespace DataAccess.Concrete.EntityFramework
                                                     join User in context.Users on C.UserID equals User.ID
                                                     join uimg in context.UserImages on C.UserID equals uimg.UserId
                                                     where (A.ID == C.ArticleID)
-                                                    select new CommentDetail
+                                                    select new CommentDetailDto
                                                     {
                                                         Id = C.ID,
                                                         ArticleId = C.ArticleID,
                                                         CommentText = C.CommentText,
                                                         UserId = C.UserID,
                                                         UserName = User.FirstName + " " + User.LastName,
-                                                        //Image = uimg.ImagePath,
+                                                        Image = uimg.ImagePath,
                                                         CommentDate = C.CommentDate,
                                                         Status = C.Status
-                                                    }).ToList()).Count == 0 ? new List<CommentDetail> { new CommentDetail { Id = -1, ArticleId = -1, CommentText = "Henüz yorum yapılmadı", CommentDate = DateTime.Now, UserId = -1, UserName = "", Image = "images/default.jpg" } }
+                                                    }).ToList()).Count == 0 ? new List<CommentDetailDto> { new CommentDetailDto { Id = -1, ArticleId = -1, CommentText = "Henüz yorum yapılmadı", CommentDate = DateTime.Now, UserId = -1, UserName = "", Image = "images/default.jpg" } }
                                             : (from C in context.Comments
                                                join User in context.Users on C.UserID equals User.ID
                                                join uimg in context.UserImages on C.UserID equals uimg.UserId
                                                where (A.ID == C.ArticleID)
-                                               select new CommentDetail
+                                               select new CommentDetailDto
                                                {
                                                    Id = C.ID,
                                                    ArticleId = C.ArticleID,
                                                    UserName = User.FirstName + " " + User.LastName,
-                                                   //Image = uimg.ImagePath,
+                                                   Image = uimg.ImagePath,
                                                    CommentText = C.CommentText,
                                                    UserId = C.UserID,
                                                    CommentDate = C.CommentDate,

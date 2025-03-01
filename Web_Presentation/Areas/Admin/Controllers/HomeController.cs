@@ -64,12 +64,13 @@ namespace Web_Presentation.Areas.Admin.Controllers
                     {
                         var jsonResponse1 = await responseMessage1.Content.ReadAsStringAsync();
                         var apiDataResponse = JsonConvert.DeserializeObject<ApiListDataResponse<Topics>>(jsonResponse1);
-                        ViewData["UserName"] = HttpContext.Session.GetString("UserName");
-                        var response = new ArticleTopicsResponse
-                        {
-                            Article = data.Data,
-                            //Topics = apiDataResponse.Data.Where(x => x.Status == true).ToList()
-                        };
+                        //ViewData["UserName"] = HttpContext.Session.GetString("UserName");
+                    var response = new ArticleTopicsResponse
+                    {
+                        Article = data.Data,
+                        //Topics = apiDataResponse.Data.Where(x => x.Status == true).ToList()
+                        Topics = apiDataResponse.Data
+                    };
 
                         return View(response);
                     }

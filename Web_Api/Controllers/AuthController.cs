@@ -48,5 +48,6 @@ namespace Web_Api.Controllers
             var result = _authService.ChangePassword(changePassword);
             return result.Success ? Ok(result) : BadRequest(result);
         }
+        
     }
 }
