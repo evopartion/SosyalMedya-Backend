@@ -3,7 +3,7 @@ using static Core.DataAccess.IEntityRepository;
 
 namespace DataAccess.Abstract
 {
-    public interface ITopicDal : IEntityRepository<Topic>
+    public interface IVerificationDal : IEntityRepository<VerificationCode>
     {
 
     }

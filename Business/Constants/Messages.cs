@@ -53,5 +53,9 @@ namespace Business.Constants
         public static string UserImageLimitExceeded;
         public static string GetDefaultImage;
         public static string UserImageIdNotExistq;
+        internal static string SendVerifyCode;
+        internal static string VerifyCodesDeleted;
+        internal static string CodeNotFound;
+        internal static string VerificationSuccessfull;
     }
 }
