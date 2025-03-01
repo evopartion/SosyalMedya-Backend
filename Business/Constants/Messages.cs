@@ -53,9 +53,10 @@ namespace Business.Constants
         public static string UserImageLimitExceeded;
         public static string GetDefaultImage;
         public static string UserImageIdNotExistq;
-        internal static string SendVerifyCode;
-        internal static string VerifyCodesDeleted;
-        internal static string CodeNotFound;
-        internal static string VerificationSuccessfull;
+        public static string SendVerifyCode;
+        public static string VerifyCodesDeleted;
+        public static string CodeNotFound;
+        public static string VerificationSuccessfull="Kod doğrulama başarılı, şifre güncelleme sayfasına yönlendiriliyorsunuz";
+        public static string PasswordChanged="şifre başarıyla güncellendi";
     }
 }

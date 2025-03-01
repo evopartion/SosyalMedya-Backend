@@ -1,4 +1,5 @@
 ﻿using Business.Abstract;
+using Entities.Concrete;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -39,6 +40,12 @@ namespace Web_Api.Controllers
 
             var registerResult = _authService.Register(userForRegisterDto, userForRegisterDto.Password);
             var result = _authService.CreateAccessToken(registerResult.Data);
+            return result.Success ? Ok(result) : BadRequest(result);
+        }
+        [HttpPost("changepassword")]
+        public IActionResult ChangePassword(ChangePassword changePassword)
+        {
+            var result = _authService.ChangePassword(changePassword);
             return result.Success ? Ok(result) : BadRequest(result);
         }
     }

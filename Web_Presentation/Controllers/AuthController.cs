@@ -45,6 +45,7 @@ namespace Web_Presentation.Controllers
 
                 HttpContext.Session.SetString("Token", jwtToken);
                 HttpContext.Session.SetInt32("UserId", userId);
+                HttpContext.Session.SetString("Email", userForLogin.Email);
                 return await SignInUserByRole(roleClaims);
             }
             else

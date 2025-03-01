@@ -12,6 +12,7 @@ using Core.Utilities.Security.Hashing;
 using Core.Utilities.Security.JWT;
 using DataAccess.Abstract;
 using DataAccess.Concrete.EntityFramework;
+using Entities.Concrete;
 using Entities.DTOs;
 using System;
 using System.Collections.Generic;
@@ -30,6 +31,29 @@ namespace Business.Concrete
         {
             _tokenHelper = tokenHelper;
             _userService = userService;
+        }
+
+        public IResult ChangePassword(ChangePassword changePassword)
+        {
+            var checkedUser = new UserForLoginDto
+            {
+                Email = changePassword.Email,
+                Password = changePassword.OldPassword
+            };
+
+            var loginResult = Login(checkedUser);
+
+            if (loginResult.Success)
+            {
+                var user = loginResult.Data;
+                byte[] passwordHash, passwordSalt;
+                HashingHelper.CreatePasswordHash(changePassword.NewPassword, out passwordHash, out passwordSalt);
+                user.PasswordHash = passwordHash;
+                user.PasswordSalt = passwordSalt;
+                _userService.Update(user);
+                return new SuccessResult(Messages.PasswordChanged);
+            }
+            return new ErrorResult(loginResult.Message);
         }
 
         public IDataResult<AccessToken> CreateAccessToken(User user)

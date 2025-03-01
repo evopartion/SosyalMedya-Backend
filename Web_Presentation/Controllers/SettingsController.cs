@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Entities.Concrete;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
 using System.Text;
@@ -90,6 +92,115 @@ namespace Web_Presentation.Controllers
                 }
             }
             return RedirectToAction("AccountSetting", "Settings");
+        }
+
+        
+        [HttpGet("kod-dogrulama")]
+        public async Task<IActionResult> GetVerifyCode()
+        {
+            ViewData["UserName"] = HttpContext.Session.GetString("UserName");
+            ViewData["UserId"] = HttpContext.Session.GetInt32("UserId");
+            ViewData["Email"] = HttpContext.Session.GetString("Email");
+            return View();
+        }
+
+        [Authorize(Roles = "admin,user")]
+        [HttpPost("kod")]
+        public async Task<IActionResult> GetVerifyCode(VerificationCode verificationCodeDto)
+        {
+            var httpClient = _httpClientFactory.CreateClient();
+            var token = HttpContext.Session.GetString("Token");
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var jsonInfo = JsonConvert.SerializeObject(verificationCodeDto);
+            var content = new StringContent(jsonInfo, Encoding.UTF8, "application/json");
+            var responseMessage = await httpClient.PostAsync("https://localhost:44339/api/VerificationCodes/sendcode", content);
+            if (responseMessage.IsSuccessStatusCode)
+            {
+                var response = new
+                {
+                    Success = true,
+                    Url = "kod-dogrulama"
+                };
+
+                return Json(response);
+            }
+            return RedirectToAction("AccountSetting", "Settings");
+        }
+        [Authorize(Roles = "admin,user")]
+        [HttpPost("verify-code")]
+        public async Task<IActionResult> VerifyCode(VerificationCode verificationCodeDto)
+        {
+            var httpClient = _httpClientFactory.CreateClient();
+            var token = HttpContext.Session.GetString("Token");
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var jsonInfo = JsonConvert.SerializeObject(verificationCodeDto);
+            var content = new StringContent(jsonInfo, Encoding.UTF8, "application/json");
+            var responseMessage = await httpClient.PostAsync("https://localhost:44339/api/VerificationCodes/checkcode", content);
+            if (responseMessage.IsSuccessStatusCode)
+            {
+                var responseContent = await responseMessage.Content.ReadAsStringAsync();
+                var apiDataResponse = JsonConvert.DeserializeObject<ApiDataResponse<VerificationCode>>(responseContent);
+
+                var response = new
+                {
+                    Success = true,
+                    Message = apiDataResponse.Message,
+                    Url = "sifre-guncelle"
+                };
+
+                return Json(response);
+            }
+            else
+            {
+                var response = new
+                {
+                    Message = "Kod doğrulanamadı ! . Lütfen tekrar deneyin",
+                };
+                return Json(response);
+            }
+
+        }
+        [Authorize(Roles = "admin,user")]
+        [HttpGet("sifre-guncelle")]
+        public async Task<IActionResult> ChangePassword()
+        {
+            ViewData["UserName"] = HttpContext.Session.GetString("UserName");
+            ViewData["Email"] = HttpContext.Session.GetString("Email");
+            return View();
+        }
+        [Authorize(Roles = "admin,user")]
+        [HttpPost("sifre-guncelle")]
+        public async Task<IActionResult> ChangePassword(Models.ChangePassword changePassword)
+        {
+            var httpClient = _httpClientFactory.CreateClient();
+            var token = HttpContext.Session.GetString("Token");
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var jsonInfo = JsonConvert.SerializeObject(changePassword);
+            var content = new StringContent(jsonInfo, Encoding.UTF8, "application/json");
+            var responseMessage = await httpClient.PostAsync("https://localhost:44339/api/Auth/changepassword", content);
+            if (responseMessage.IsSuccessStatusCode)
+            {
+                var responseContent = await responseMessage.Content.ReadAsStringAsync();
+                var apiDataResponse = JsonConvert.DeserializeObject<ApiDataResponse<Models.ChangePassword>>(responseContent);
+
+                var response = new
+                {
+                    Success = true,
+                    Message = apiDataResponse.Message,
+                    Url = "/"
+                };
+
+                return Json(response);
+            }
+            else
+            {
+                var response = new
+                {
+                    Message = "Şifre Güncellenemedi , lütfen tekrar deneyin",
+                };
+                return Json(response);
+            }
+
         }
 
         private async Task<ApiDataResponse<UserImage>> GetUpdateUserImageResponseMessage(HttpResponseMessage responseMessage)

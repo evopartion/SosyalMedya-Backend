@@ -1,6 +1,7 @@
 ﻿using Core.Entities.Concrete;
 using Core.Utilities.Result.Abstract;
 using Core.Utilities.Security.JWT;
+using Entities.Concrete;
 using Entities.DTOs;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,7 @@ namespace Business.Abstract
         IDataResult<User> Register(UserForRegisterDto userForRegisterDto, string password);
         IDataResult<User> Login(UserForLoginDto userForLoginDto);
         IResult UserExist(string email);
+        IResult ChangePassword(ChangePassword changePassword);
         IDataResult<AccessToken> CreateAccessToken(User user);
     }
 }

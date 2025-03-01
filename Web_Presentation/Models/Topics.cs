@@ -1,4 +1,6 @@
-﻿namespace Web_Presentation.Models
+﻿using Core.Entities;
+
+namespace Web_Presentation.Models
 {
     public class Topics
     {
