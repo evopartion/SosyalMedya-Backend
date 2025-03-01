@@ -7,6 +7,4 @@ namespace DataAccess.Abstract
     {
 
     }
-
-    
 }

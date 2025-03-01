@@ -58,5 +58,8 @@ namespace Business.Constants
         public static string CodeNotFound;
         public static string VerificationSuccessfull="Kod doğrulama başarılı, şifre güncelleme sayfasına yönlendiriliyorsunuz";
         public static string PasswordChanged="şifre başarıyla güncellendi";
+        internal static string ClaimAdd;
+        internal static string ClaimsListed;
+        internal static string ClaimDeleted;
     }
 }

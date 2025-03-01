@@ -58,11 +58,19 @@ namespace Business.Concrete
             return new SuccessDataResult<List<ArticleDetailDto>>(_articleDal.GetArticleDetails(), Messages.ArticleWithDetailListed);
         }
 
-        public IDataResult<List<ArticleDetailDto>> GetArticleDetailsByUserId(int id)
+        public IDataResult<ArticleDetailDto> GetArticleDetailsById(int id)
         {
-            return new SuccessDataResult<List<ArticleDetailDto>>(_articleDal.GetArticleDetails(x=>x.UserId==id), Messages.ArticleWithDetailListed);
+            return new SuccessDataResult<ArticleDetailDto>(_articleDal.GetArticleDetailsById(x => x.Id == id), Messages.ArticleWithDetailListed);
         }
 
+        public IDataResult<List<ArticleDetailDto>> GetArticleDetailsByUserId(int id)
+        {
+            return new SuccessDataResult<List<ArticleDetailDto>>(_articleDal.GetArticleDetails(x => x.UserId == id), Messages.ArticleWithDetailListed);
+        }
+        IDataResult<ArticleDetailDto> IArticleServices.GetArticleDetailsById(int id)
+        {
+            throw new NotImplementedException();
+        }
         [CacheAspect(10)]
         public IDataResult<Article> GetById(int id)
         {
@@ -75,5 +83,7 @@ namespace Business.Concrete
             _articleDal.Update(entity);
             return new SuccessResult(Messages.Article_Edit);
         }
+
+        
     }
 }
