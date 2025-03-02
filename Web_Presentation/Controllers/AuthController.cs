@@ -14,24 +14,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Headers;
 using UserForRegisterDto = Web_Presentation.Models.UserForRegisterDto;
-
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
-using Newtonsoft.Json;
-using NuGet.Common;
-
-using System.IdentityModel.Tokens.Jwt;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Security.Claims;
-using System.Text;
-using System.Text.Json;
-using System.Web;
-
+using UserForLoginDto = Web_Presentation.Models.UserForLoginDto;
 
 namespace Web_Presentation.Controllers
 {
@@ -39,9 +22,6 @@ namespace Web_Presentation.Controllers
     public class AuthController : Controller
     {
         private readonly IHttpClientFactory _httpClientFactory;
-        private string userName;
-        private object ExtractUserNameFromJwtToken;
-
         public AuthController(IHttpClientFactory httpClientFactory)
         {
             _httpClientFactory = httpClientFactory;
@@ -51,63 +31,55 @@ namespace Web_Presentation.Controllers
         public IActionResult Login() => View();
 
         [HttpPost("LoginPost")]
-        public async Task<IActionResult> LoginPost(Entities.DTOs.UserForLoginDto loginDto)
+        public async Task<IActionResult> LoginPost(UserForLoginDto userForLogin)
         {
-            var jsonLoginDto = JsonConvert.SerializeObject(loginDto);
-            var content = new StringContent(jsonLoginDto, Encoding.UTF8, "application/json");
-            var responseMessage = await _httpClientFactory.CreateClient().PostAsync("https://localhost:44339/api/Auth/login", content);
+            var jsonLogin = JsonConvert.SerializeObject(userForLogin);
+            StringContent conten = new StringContent(jsonLogin, Encoding.UTF8, "application/json");
+            var responseMessage = await _httpClientFactory.CreateClient().PostAsync("https://localhost:44339/api/Auth/login", conten);
 
             if (responseMessage.IsSuccessStatusCode)
             {
-                var userForLogin = await GetUserForLogin(responseMessage);
+                var userForLoginSuccess = await GetUserForLogin(responseMessage);
 
-                TempData["Baslik"] = "Giriş Başarılı";
-                TempData["Message"] = " Merhaba " + userForLogin.Message + ", hoş geldin.";
-                TempData["Success"] = userForLogin.Success;
+                TempData["Message"] = userForLoginSuccess.Message;
+                TempData["Success"] = userForLoginSuccess.Success;
 
-                if (userForLogin.Data != null)
+                if (userForLoginSuccess.Data != null && userForLoginSuccess.Data.Token != null)
                 {
                     JwtSecurityTokenHandler handler = new JwtSecurityTokenHandler();
-                    var token = handler.ReadJwtToken(userForLogin.Data.Token);
+                    var token = handler.ReadJwtToken(userForLoginSuccess.Data.Token);
                     var claims = token.Claims.ToList();
 
-                    if (userForLogin.Data.Token != null)
+                    var userName = ExtractUserNameFromJwtToken.GetUserNameFromJwtToken(userForLoginSuccess.Data.Token);
+                    var userId = ExtractUserIdentityFromJwtToken.GetUserIdentityFromJwtToken(userForLoginSuccess.Data.Token);
+
+                    HttpContext.Session.SetString("Token", userForLoginSuccess.Data.Token);
+                    HttpContext.Session.SetString("UserName", userName);
+                    HttpContext.Session.SetInt32("UserId", userId);
+                    HttpContext.Session.SetString("Email", userForLogin.Email);
+
+                    claims.Add(new Claim("sosyalmediyasitetoken", userForLoginSuccess.Data.Token));
+
+                    var claimsIdentity = new ClaimsIdentity(claims, JwtBearerDefaults.AuthenticationScheme);
+                    var authProps = new AuthenticationProperties
                     {
-                        _httpClientFactory.CreateClient().DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", userForLogin.Data.Token);
-                        var userId = ExtractUserIdentityFromJwtToken.GetUserIdentityFromJwtToken(userForLogin.Data.Token);
-                        //var userName = ExtractUserNameFromJwtToken.GetUserNameFromJwtToken(userForLogin.Data.Token);
+                        ExpiresUtc = userForLoginSuccess.Data.Expiration,
+                        IsPersistent = true
+                    };
 
-                        HttpContext.Session.SetInt32("UserId", userId);
-                        HttpContext.Session.SetString("Email", loginDto.Email);
-                        HttpContext.Session.SetString("UserName", userName);
-                        HttpContext.Session.SetString("Token", userForLogin.Data.Token);
-
-                        claims.Add(new Claim("socialmediawebsitetoken", userForLogin.Data.Token));
-                        var claimsIdentity = new ClaimsIdentity(claims, JwtBearerDefaults.AuthenticationScheme);
-                        var authProps = new AuthenticationProperties
-                        {
-                            ExpiresUtc = userForLogin.Data.Expiration,
-                            IsPersistent = true
-                        };
-
-                        await HttpContext.SignInAsync(JwtBearerDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProps);
-                        return RedirectToAction("Index", "Home");
-                    }
+                    await HttpContext.SignInAsync(JwtBearerDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProps);
+                    return RedirectToAction("Index", "Home");
                 }
+
+
                 return RedirectToAction("Login", "Auth");
             }
             else
             {
-                var userForLogin = await GetUserForLogin(responseMessage);
-                TempData["LoginFail"] = userForLogin.Message;
+                var userForLoginError = await GetUserForLogin(responseMessage);
+                TempData["LoginFail"] = userForLoginError.Message;
                 return RedirectToAction("Login", "Auth");
             }
-        }
-
-        private async Task<ApiDataResponse<Entities.DTOs.UserForLoginDto>> GetUserForLogin(HttpResponseMessage responseMessage)
-        {
-            var responseContent = await responseMessage.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<ApiDataResponse<Entities.DTOs.UserForLoginDto>>(responseContent);
         }
 
         [HttpGet("aramiza-katil")]
@@ -117,10 +89,10 @@ namespace Web_Presentation.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Register(UserForRegisterDto registerDto)
+        public async Task<IActionResult> Register(UserForRegisterDto userForRegisterDto)
         {
-            var jsonRegisterDto = JsonConvert.SerializeObject(registerDto);
-            var content = new StringContent(jsonRegisterDto, Encoding.UTF8, "application/json");
+            var jsonRegister = JsonConvert.SerializeObject(userForRegisterDto);
+            StringContent content = new StringContent(jsonRegister, Encoding.UTF8, "application/json");
             var responseMessage = await _httpClientFactory.CreateClient().PostAsync("https://localhost:44339/api/Auth/register", content);
             if (responseMessage.IsSuccessStatusCode)
             {
@@ -146,9 +118,9 @@ namespace Web_Presentation.Controllers
         [HttpPost]
         public async Task<IActionResult> ForgotPassword(ResetPassword resetPassword)
         {
-            var jsonEmail = JsonConvert.SerializeObject(resetPassword);
-            var contentEmail = new StringContent(jsonEmail, Encoding.UTF8, "application/json");
-            var responseMessage = await _httpClientFactory.CreateClient().PostAsync("https://localhost:44339/api/VerificationCodes/sendcodeforpasswordreset", contentEmail);
+            var jsonRegister = JsonConvert.SerializeObject(resetPassword);
+            StringContent content = new StringContent(jsonRegister, Encoding.UTF8, "application/json");
+            var responseMessage = await _httpClientFactory.CreateClient().PostAsync("https://localhost:44347/api/VerificationCodes/sendcodeforgotpassword", content);
             if (responseMessage.IsSuccessStatusCode)
             {
                 var response = new
@@ -181,28 +153,28 @@ namespace Web_Presentation.Controllers
         [HttpPost]
         public async Task<IActionResult> CheckCode(ResetPassword resetPassword)
         {
-            var jsonInfo = JsonConvert.SerializeObject(resetPassword);
-            var content = new StringContent(jsonInfo, Encoding.UTF8, "application/json");
-            var responseMessage = await _httpClientFactory.CreateClient().PostAsync($"https://localhost:44339/api/VerificationCodes/checkcodeforpasswordreset", content);
+            var jsonRegister = JsonConvert.SerializeObject(resetPassword);
+            StringContent content = new StringContent(jsonRegister, Encoding.UTF8, "application/json");
+            var responseMessage = await _httpClientFactory.CreateClient().PostAsync("https://localhost:44347/api/VerificationCodes/checkcodeforgotpassword", content);
             if (responseMessage.IsSuccessStatusCode)
             {
-                var jsonResponse = await responseMessage.Content.ReadAsStringAsync();
-                var apiDataResponse = JsonConvert.DeserializeObject<ApiDataResponse<Entities.Concrete.VerificationCode>>(jsonResponse);
-                TempData["UserEmail"] = resetPassword.Email;
+                string responseContent = await responseMessage.Content.ReadAsStringAsync();
+                var apiDataResponse = JsonConvert.DeserializeObject<ApiDataResponse<ResetPassword>>(responseContent);
                 var response = new
                 {
                     Success = apiDataResponse.Success,
                     Message = apiDataResponse.Message,
                     Url = "/Auth/ResetPassword"
                 };
+                TempData["UserEmail"] = resetPassword.Email;
                 return Json(response);
-
             }
             else
             {
                 var response = new
                 {
-                    Message = "Kod doğrulanamadı ! . Lütfen tekrar deneyin",
+                    Success = false,
+                    Message = "Bilgilerinizi kontrol edip tekrar deneyin"
                 };
                 return Json(response);
             }
@@ -215,23 +187,21 @@ namespace Web_Presentation.Controllers
             return View();
         }
 
-        [HttpPut]
-        public async Task<IActionResult> ResetPassword(Models.ChangePassword changePassword)
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword(Models.ChangePassword resetPassword)
         {
-            var jsonData = JsonConvert.SerializeObject(changePassword);
-            var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
-            var responseMessage = await _httpClientFactory.CreateClient().PutAsync($"https://localhost:44339/api/Auth/adminchangepassword", content);
+            var jsonRegister = JsonConvert.SerializeObject(resetPassword);
+            StringContent content = new StringContent(jsonRegister, Encoding.UTF8, "application/json");
+            var responseMessage = await _httpClientFactory.CreateClient().PostAsync("https://localhost:44347/api/Auth/adminchangepassword", content);
             if (responseMessage.IsSuccessStatusCode)
             {
-                var jsonResponse = await responseMessage.Content.ReadAsStringAsync();
-                var apiDataResponse = JsonConvert.DeserializeObject<ApiDataResponse<Models.ChangePassword>>(jsonResponse);
-
+                string responseContent = await responseMessage.Content.ReadAsStringAsync();
+                var apiDataResponse = JsonConvert.DeserializeObject<ApiDataResponse<Models.ChangePassword>>(responseContent);
                 var response = new
                 {
                     Success = apiDataResponse.Success,
                     Message = apiDataResponse.Message,
                     Url = "/giris-yap"
-
                 };
                 return Json(response);
             }
@@ -240,12 +210,11 @@ namespace Web_Presentation.Controllers
                 var response = new
                 {
                     Success = false,
-                    Message = "Şifre güncellenemedi, lütfen tekrar deneyin",
+                    Message = "Şifre güncellenemedi, lütfen tekrara deneyin"
                 };
                 return Json(response);
             }
         }
-
 
         [HttpGet]
         public async Task<IActionResult> LogOut()
@@ -253,6 +222,12 @@ namespace Web_Presentation.Controllers
             await HttpContext.SignOutAsync();
             HttpContext.Session.Clear();
             return RedirectToAction("Login", "Auth");
+        }
+
+        private async Task<ApiDataResponse<UserForLoginDto>> GetUserForLogin(HttpResponseMessage responseMessage)
+        {
+            string responseContent = await responseMessage.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<ApiDataResponse<UserForLoginDto>>(responseContent);
         }
     }
 }
