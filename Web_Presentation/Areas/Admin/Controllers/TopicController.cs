@@ -21,7 +21,7 @@ namespace Web_Presentation.Areas.Admin.Controllers
             [HttpGet]
             public async Task<IActionResult> Index()
             {
-                var responseMessage = await _httpClientFactory.CreateClient().GetAsync("https://localhost:44347/api/Topics/getall");
+                var responseMessage = await _httpClientFactory.CreateClient().GetAsync("https://localhost:44339/api/Topics/getall");
                 if (responseMessage.IsSuccessStatusCode)
                 {
                     var jsonResponse = await responseMessage.Content.ReadAsStringAsync();
@@ -39,7 +39,7 @@ namespace Web_Presentation.Areas.Admin.Controllers
                 var httpClient = _httpClientFactory.CreateClient();
                 var token = HttpContext.Session.GetString("Token");
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                var responseMessage = await httpClient.DeleteAsync("https://localhost:44347/api/Topics/delete?id=" + id);
+                var responseMessage = await httpClient.DeleteAsync("https://localhost:44339/api/Topics/delete?id=" + id);
                 if (responseMessage.IsSuccessStatusCode)
                 {
                     var responseContent = await responseMessage.Content.ReadAsStringAsync();
@@ -64,7 +64,7 @@ namespace Web_Presentation.Areas.Admin.Controllers
                 var httpClient = _httpClientFactory.CreateClient();
                 var token = HttpContext.Session.GetString("Token");
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                var responseMessage = await httpClient.PostAsync("https://localhost:44347/api/Topics/add", content);
+                var responseMessage = await httpClient.PostAsync("https://localhost:44339/api/Topics/add", content);
                 if (responseMessage.IsSuccessStatusCode)
                 {
                     return RedirectToAction("Index", "Topic", new { area = "Admin" });
@@ -82,7 +82,7 @@ namespace Web_Presentation.Areas.Admin.Controllers
                 var httpClient = _httpClientFactory.CreateClient();
                 var token = HttpContext.Session.GetString("Token");
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                var responseMessage = await httpClient.PutAsync("https://localhost:44347/api/Topics/update", content);
+                var responseMessage = await httpClient.PutAsync("https://localhost:44339/api/Topics/update", content);
                 if (responseMessage.IsSuccessStatusCode)
                 {
                     var responseContent = await responseMessage.Content.ReadAsStringAsync();

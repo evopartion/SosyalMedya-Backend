@@ -24,6 +24,12 @@ namespace Web_Api.Controllers
             IDataResult<List<User>> result = _userServices.GetAll();
             return result.Success ? Ok(result) : BadRequest();
         }
+        [HttpGet("getalldto")]
+        public ActionResult GetAllDto()
+        {
+            IDataResult<List<UserDto>> result = _userServices.GetAllDto();
+            return result.Success ? Ok(result) : BadRequest(result);
+        }
         [HttpGet("getbyid")]
         public IActionResult GetByID(int id)
         {

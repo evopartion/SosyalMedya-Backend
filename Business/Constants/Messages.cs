@@ -61,5 +61,10 @@ namespace Business.Constants
         internal static string ClaimAdd;
         internal static string ClaimsListed;
         internal static string ClaimDeleted;
+        internal static string UserClaimAdd;
+        internal static string UserClaimDeleted;
+        internal static string UserClaimNotFound;
+        internal static string UserClaimUpdate;
+        internal static string UserClaimslisted;
     }
 }
