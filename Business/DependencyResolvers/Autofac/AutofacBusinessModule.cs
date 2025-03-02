@@ -22,39 +22,42 @@ namespace Business.DependencyResolvers.Autofac
         protected override void Load(ContainerBuilder builder)
 
         {
-            builder.RegisterType<UserOperationClaimManager>().As<IUserOperationClamService>().SingleInstance();
+            builder.RegisterType<UserOperationClaimManager>().As<IUserOperationClaimService>().SingleInstance();
             builder.RegisterType<EfUserOperationClaimDal>().As<IUserOperationClaimDal>().SingleInstance();
 
             builder.RegisterType<OperationClaimManager>().As<IOperationClaimService>().SingleInstance();
             builder.RegisterType<EfOperationClaimDal>().As<IOperationClaimDal>().SingleInstance();
 
-            builder.RegisterType<VerificationCodeManager>().As<IVerificationCodeService>().SingleInstance();
-            builder.RegisterType<EfVerificationCodeDal>().As<IVerificationDal>().SingleInstance();
-
-            builder.RegisterType<UserManager>().As<IUserServices>().SingleInstance();
-            builder.RegisterType<EfUserDal>().As<IUserDal>().SingleInstance();
+            //builder.RegisterType<VerificationCodeManager>().As<IVerificationCodeService>().SingleInstance();
+            //builder.RegisterType<EfVerificationCodeDal>().As<IVerificationCodeDal>().SingleInstance();
 
             builder.RegisterType<ArticleManager>().As<IArticleServices>().SingleInstance();
             builder.RegisterType<EfArticleDal>().As<IArticleDal>().SingleInstance();
 
-            builder.RegisterType<CommentManager>().As<ICommentServices>().SingleInstance();
-            builder.RegisterType<EfCommentDal>().As<ICommentDal>().SingleInstance();
+            builder.RegisterType<CommentManager>().As<ICommentService>().SingleInstance();
+            builder.RegisterType<EfCommentleDal>().As<ICommentDal>().SingleInstance();
+
+            builder.RegisterType<TopicManager>().As<ITopicService>().SingleInstance();
+            builder.RegisterType<EfTopicDal>().As<ITopicDal>().SingleInstance();
 
             builder.RegisterType<UserImageManager>().As<IUserImageService>().SingleInstance();
             builder.RegisterType<EfUserImageDal>().As<IUserImageDal>().SingleInstance();
 
-            builder.RegisterType<TopicManager>().As<ITopicServices>().SingleInstance();
-            builder.RegisterType<EfTopicDal>().As<ITopicDal>().SingleInstance();
+            builder.RegisterType<UserManager>().As<IUserService>().SingleInstance();
+            builder.RegisterType<EfUserDal>().As<IUserDal>().SingleInstance();
 
-            builder.RegisterType<AuthManager>().As<IAuthService>().SingleInstance(); ;
-            builder.RegisterType<JwtHelper>().As<ITokenHelper>().SingleInstance(); ;
+            builder.RegisterType<AuthManager>().As<IAuthService>();
+            builder.RegisterType<JwtHelper>().As<ITokenHelper>();
 
             var assembly = System.Reflection.Assembly.GetExecutingAssembly();
 
-            builder.RegisterAssemblyTypes(assembly).AsImplementedInterfaces().EnableInterfaceInterceptors(new ProxyGenerationOptions()
-            {
-                Selector = new AspectInterceptorSelector()
-            }).SingleInstance();
+            builder.RegisterAssemblyTypes(assembly).AsImplementedInterfaces()
+                .EnableInterfaceInterceptors(new ProxyGenerationOptions()
+                {
+                    Selector = new AspectInterceptorSelector()
+                }).SingleInstance();
+
+            //builder.RegisterBuildCallback(cr => Console.WriteLine("Container built!"));
         }
     }
 }

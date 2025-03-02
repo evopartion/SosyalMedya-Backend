@@ -1,6 +1,10 @@
 ﻿using Business.Abstract;
+using Business.BusinessAspects.Autofac;
 using Business.Constants;
-using Core.Entities;
+using Core.Aspects.Autofac.Caching;
+using Core.Aspects.Autofac.Logging;
+using Core.CrossCuttingConncerns.Logging.Log4Net.Logger;
+using Core.Entities.Concrete;
 using Core.Utilities.Business;
 using Core.Utilities.Result.Abstract;
 using Core.Utilities.Result.Concrete;
@@ -26,6 +30,9 @@ namespace Business.Concrete
             _userImageDal = userImageDal;
         }
 
+        [LogAspect(typeof(FileLogger))]
+        [SecuredOperation("admin,user")]
+        [CacheRemoveAspect("IUserImageService.Get")]
         public IResult Add(IFormFile file, int userId)
         {
             IResult rulesResult = BusinessRules.Run(CheckIfUserImageLimitExceeded(userId));
@@ -50,6 +57,9 @@ namespace Business.Concrete
             return new SuccessResult(Messages.UserImageAdded);
         }
 
+        [LogAspect(typeof(FileLogger))]
+        [SecuredOperation("admin,user")]
+        [CacheRemoveAspect("IUserImageService.Get")]
         public IResult Delete(UserImage userImage)
         {
             IResult rulesResult = BusinessRules.Run(CheckIfUserImageIdExist(userImage.Id));
@@ -99,9 +109,11 @@ namespace Business.Concrete
             var images = checkIfUserImage.Success
                 ? checkIfUserImage.Data
                 : _userImageDal.GetAll(c => c.UserId == userId);
-            return new SuccessDataResult<List<UserImage>>(images, checkIfUserImage.Message); ;
+            return new SuccessDataResult<List<UserImage>>(images, checkIfUserImage.Message);
         }
 
+        [LogAspect(typeof(FileLogger))]
+        [SecuredOperation("admin,user")]
         public IResult Update(UserImage userImage, IFormFile file)
         {
             IResult rulesResult = BusinessRules.Run(CheckIfUserImageIdExist(userImage.Id),
@@ -129,7 +141,7 @@ namespace Business.Concrete
         private IResult CheckIfUserImageLimitExceeded(int userId)
         {
             int result = _userImageDal.GetAll(c => c.UserId == userId).Count;
-            if (result >= 1)
+            if (result >= 5)
             {
                 return new ErrorResult(Messages.UserImageLimitExceeded);
             }

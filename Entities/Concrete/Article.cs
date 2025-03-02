@@ -9,10 +9,10 @@ namespace Entities.Concrete
 {
     public class Article : IEntity
     {
-        public int ID { get; set; }
-        public int TopicID { get; set; }
-        public int UserID { get; set; }
-        public int? CommentID { get; set; }
+        public int Id { get; set; }
+        public int TopicId { get; set; }
+        public int UserId { get; set; }
+        public int? CommentId { get; set; }
         public string Content { get; set; }
         public DateTime SharingDate { get; set; }
     }

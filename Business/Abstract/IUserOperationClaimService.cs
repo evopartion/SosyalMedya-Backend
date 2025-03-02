@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Business.Abstract
 {
-    public interface IUserOperationClamService
+    public interface IUserOperationClaimService
     {
         IResult Delete(int id, int claimId);
         IResult Add(UserOperationClaim entity);

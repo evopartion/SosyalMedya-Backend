@@ -1,5 +1,10 @@
 ﻿using Business.Abstract;
+using Business.BusinessAspects.Autofac;
 using Business.Constants;
+using Core.Aspects.Autofac.Caching;
+using Core.Aspects.Autofac.Logging;
+using Core.Aspects.Autofac.Validation;
+using Core.CrossCuttingConncerns.Logging.Log4Net.Logger;
 using Core.Entities;
 using Core.Entities.Concrete;
 using Core.Utilities.Business;
@@ -7,48 +12,30 @@ using Core.Utilities.Result.Abstract;
 using Core.Utilities.Result.Concrete;
 using DataAccess.Abstract;
 using Entities.DTOs;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Web_Presentation.Utilities.Helpers.FileHelper;
 
 namespace Business.Concrete
 {
-    public class UserManager : IUserServices
+    public class UserManager : IUserService
     {
         private readonly IUserDal _userDal;
-        public UserManager(IUserDal userDal)
+        private readonly IArticleDal _articleDal;
+        private readonly ICommentDal _commentDal;
+        private readonly IUserImageDal _userImageDal;
+        private readonly IUserOperationClaimDal _userOperationClaimDal;
+        public UserManager(IUserDal userDal, IArticleDal articleDal, ICommentDal commentDal, IUserImageDal userImageDal, IUserOperationClaimDal userOperationClaimDal)
         {
             _userDal = userDal;
-        }
-
-        public IResult Add(User entity)
-        {
-            var rulesResult = BusinessRules.Run(CheckIfEmailExist(entity.Email));
-            if (rulesResult != null)
-            {
-                return rulesResult;
-            }
-            _userDal.Add(entity);
-            return new SuccessResult(Messages.UserAdded);
-        }
-
-        public IResult Delete(int id)
-        {
-            var rulesResult = BusinessRules.Run(CheckIfUserIdExist(id));
-            if (rulesResult != null)
-            {
-                return rulesResult;
-            }
-            var deletedUser = _userDal.Get(x => x.ID == id);
-            _userDal.Delete(deletedUser);
-            return new SuccessResult(Messages.userDeleted);
-        }
-
-        public IResult DeleteByID(int userId)
-        {
-            throw new NotImplementedException();
+            _articleDal = articleDal;
+            _commentDal = commentDal;
+            _userImageDal = userImageDal;
+            _userOperationClaimDal = userOperationClaimDal;
         }
 
         public IDataResult<List<User>> GetAll()
@@ -61,48 +48,56 @@ namespace Business.Concrete
             return new SuccessDataResult<List<UserDto>>(_userDal.GetUsersDtos(), Messages.UsersListed);
         }
 
-        public IDataResult<User> GetById(int id)
+        public IDataResult<User> GetUserById(int userId)
         {
-            var user = _userDal.Get(x => x.ID == id);
+            var user = _userDal.Get(u => u.Id == userId);
             if (user != null)
             {
                 return new SuccessDataResult<User>(user, Messages.UserListed);
             }
+
             return new ErrorDataResult<User>(Messages.UserNotExist);
-        }
-
-        public IDataResult<List<OperationClaim>> GetClaims(User user)
-        {
-            var rulesResult = BusinessRules.Run(CheckIfUserIdExist(user.ID));
-            if (rulesResult != null)
-            {
-                return new ErrorDataResult<List<OperationClaim>>(rulesResult.Message);
-            }
-            return new SuccessDataResult<List<OperationClaim>>(_userDal.GetClaims(user));
-        }
-
-        public IDataResult<User> GetUserByMail(string email)
-        {
-            return new SuccessDataResult<User>(_userDal.Get(x => x.Email == email));
         }
 
         public IDataResult<UserDto> GetUserDtoById(int userId)
         {
-            return new SuccessDataResult<UserDto>(_userDal.GetUsersDtos(x => x.Id == userId).SingleOrDefault(), Messages.UserListed);
+            return new SuccessDataResult<UserDto>(_userDal.GetUsersDtos(u => u.Id == userId).SingleOrDefault(), Messages.UserListed);
         }
 
-        public IResult Update(User entity)
+        // [ValidationAspect(typeof(UserValidator))]
+        [LogAspect(typeof(FileLogger))]
+        [SecuredOperation("admin,user")]
+        [CacheRemoveAspect("IUserService.Get")]
+        public IResult Add(User user)
         {
-            var result = BusinessRules.Run(CheckIfUserIdExist(entity.ID), CheckIfEmailAvailable(entity.Email));
-            if (result != null)
+            var rulesResult = BusinessRules.Run(CheckIfEmailExist(user.Email));
+            if (rulesResult != null)
             {
-                return result;
+                return rulesResult;
             }
 
-            _userDal.Update(entity);
+            _userDal.Add(user);
+            return new SuccessResult(Messages.UserAdded);
+        }
+
+        //[ValidationAspect(typeof(UserValidator))]
+        [LogAspect(typeof(FileLogger))]
+        [SecuredOperation("admin,user")]
+        [CacheRemoveAspect("IUserService.Get")]
+        public IResult Update(User user)
+        {
+            var rulesResult = BusinessRules.Run(CheckIfUserIdExist(user.Id), CheckIfEmailAvailable(user.Email));
+            if (rulesResult != null)
+            {
+                return rulesResult;
+            }
+
+            _userDal.Update(user);
             return new SuccessResult(Messages.UserUpdated);
         }
 
+        //  [ValidationAspect(typeof(UserDtoValidator))]
+        [LogAspect(typeof(FileLogger))]
         public IResult UpdateByDto(UserDto userDto)
         {
             var rulesResult = BusinessRules.Run(CheckIfUserIdExist(userDto.Id), CheckIfEmailAvailable(userDto.Email));
@@ -111,7 +106,7 @@ namespace Business.Concrete
                 return rulesResult;
             }
 
-            var updatedUser = _userDal.Get(x => x.ID == userDto.Id && x.Email == userDto.Email);
+            var updatedUser = _userDal.Get(u => u.Id == userDto.Id && u.Email == userDto.Email);
             if (updatedUser == null)
             {
                 return new ErrorResult(Messages.UserNotFound);
@@ -119,19 +114,95 @@ namespace Business.Concrete
 
             updatedUser.FirstName = userDto.FirstName;
             updatedUser.LastName = userDto.LastName;
-            updatedUser.Email = userDto.Email;
             updatedUser.Gender = userDto.Gender;
+            updatedUser.Email = userDto.Email;
             updatedUser.PhoneNumber = userDto.PhoneNumber;
 
             _userDal.Update(updatedUser);
             return new SuccessResult(Messages.UserUpdated);
         }
 
+        //  [ValidationAspect(typeof(UserValidator))]
+        public IDataResult<List<OperationClaim>> GetClaims(User user)
+        {
+            var rulesResult = BusinessRules.Run(CheckIfUserIdExist(user.Id));
+            if (rulesResult != null)
+            {
+                return new ErrorDataResult<List<OperationClaim>>(rulesResult.Message);
+            }
+
+            return new SuccessDataResult<List<OperationClaim>>(_userDal.GetClaims(user));
+        }
+        [LogAspect(typeof(FileLogger))]
+        public async Task<IDataResult<User>> GetUserByMail(string email)
+        {
+            return new SuccessDataResult<User>(_userDal.Get(u => u.Email == email));
+        }
+        [LogAspect(typeof(FileLogger))]
+        public IDataResult<UserDto> GetUserDtoByMail(string email)
+        {
+            return new SuccessDataResult<UserDto>(_userDal.GetUsersDtos(u => u.Email == email).SingleOrDefault(), message: Messages.UserListed);
+        }
+
+        [LogAspect(typeof(FileLogger))]
+        [SecuredOperation("admin,user")]
+        [CacheRemoveAspect("IArticleService.Get")]
+        [CacheRemoveAspect("ICommentService.Get")]
+        [CacheRemoveAspect("IUserService.Get")]
+        public IResult Delete(int userId)
+        {
+            var rulesResult = BusinessRules.Run(CheckIfUserIdExist(userId));
+            if (rulesResult != null)
+            {
+                return rulesResult;
+            }
+
+            var deletedUser = _userDal.Get(u => u.Id == userId);
+            var deletedArticle = _articleDal.GetAll(x => x.UserId == userId);
+            if (deletedArticle != null)
+            {
+                foreach (var item in deletedArticle)
+                {
+                    var deletedComment = _commentDal.GetAll(x => x.ArticleId == item.Id);
+                    if (deletedComment != null)
+                    {
+                        foreach (var comment in deletedComment)
+                        {
+                            _commentDal.Delete(comment);
+                        }
+                    }
+                    _articleDal.Delete(item);
+                }
+            }
+
+            var deletedImage = _userImageDal.Get(c => c.UserId == userId);
+            var result = FileHelper.Delete(deletedImage.ImagePath);
+            if (!result.Success)
+            {
+                return new ErrorResult(Messages.ErrorDeletingImage);
+            }
+            _userImageDal.Delete(deletedImage);
+
+            var deletedClaims = _userOperationClaimDal.GetAll(x => x.UserId == userId);
+            if (deletedClaims != null)
+            {
+                foreach (var userClaim in deletedClaims)
+                {
+                    var deletedClaim = _userOperationClaimDal.Get(x => x.UserId == userClaim.UserId && x.OperationClaimId == userClaim.OperationClaimId);
+                    _userOperationClaimDal.Delete(deletedClaim);
+                }
+            }
+
+            _userDal.Delete(deletedUser);
+            return new SuccessResult(Messages.UserDeleted);
+
+        }
+
         //Business Rules
 
         private IResult CheckIfUserIdExist(int userId)
         {
-            var result = _userDal.GetAll(x => x.ID == userId).Any();
+            var result = _userDal.GetAll(u => u.Id == userId).Any();
             if (!result)
             {
                 return new ErrorResult(Messages.UserNotExist);
@@ -154,14 +225,19 @@ namespace Business.Concrete
             var result = BaseCheckIfEmailExist(userEmail);
             if (!result)
             {
-                return new ErrorResult(Messages.userEmailNotAvailable);
+                return new ErrorResult(Messages.UserEmailNotAvailable);
             }
             return new SuccessResult();
         }
 
         private bool BaseCheckIfEmailExist(string userEmail)
         {
-            return _userDal.GetAll(x => x.Email == userEmail).Any();
+            return _userDal.GetAll(u => u.Email == userEmail).Any();
+        }
+
+        public IDataResult<User> GetEntityById(int id)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -7,6 +7,7 @@ namespace Web_Presentation.Areas.Admin.ViewComponents.AssignAuthority
     public class _AssignAuthority:ViewComponent
     {
         private readonly IHttpClientFactory _httpClientFactory;
+
         public _AssignAuthority(IHttpClientFactory httpClientFactory)
         {
             _httpClientFactory = httpClientFactory;
@@ -14,19 +15,19 @@ namespace Web_Presentation.Areas.Admin.ViewComponents.AssignAuthority
 
         public async Task<IViewComponentResult> InvokeAsync()
         {
-            var responseMessage = await _httpClientFactory.CreateClient().GetAsync("https://localhost:44347/api/OperationClaims/getall");
-            if (responseMessage.IsSuccessStatusCode)
+            var responseMessageClaim = await _httpClientFactory.CreateClient().GetAsync("http://localhost:65527/api/OperationClaims/getall");
+            if (responseMessageClaim.IsSuccessStatusCode)
             {
-                var jsonResponse = await responseMessage.Content.ReadAsStringAsync();
-                var apiDataResponse = JsonConvert.DeserializeObject<ApiListDataResponse<OperationClaim>>(jsonResponse);
+                var jsonResponseClaim = await responseMessageClaim.Content.ReadAsStringAsync();
+                var apiDataResponseClaim = JsonConvert.DeserializeObject<ApiListDataResponse<OperationClaim>>(jsonResponseClaim);
 
-                var responseMessageUser = await _httpClientFactory.CreateClient().GetAsync("https://localhost:44347/api/Users/getalldto");
+                var responseMessageUser = await _httpClientFactory.CreateClient().GetAsync("http://localhost:65527/api/Users/getalldto");
                 if (responseMessageUser.IsSuccessStatusCode)
                 {
-                    var jsonResponseuser = await responseMessageUser.Content.ReadAsStringAsync();
-                    var apiDataResponseuser = JsonConvert.DeserializeObject<ApiListDataResponse<UserDto>>(jsonResponseuser);
+                    var jsonResponseUser = await responseMessageUser.Content.ReadAsStringAsync();
+                    var apiDataResponseUser = JsonConvert.DeserializeObject<ApiListDataResponse<UserDto>>(jsonResponseUser);
 
-                    var tuple = (apiDataResponse.Data, apiDataResponseuser.Data);
+                    var tuple = (apiDataResponseClaim.Data, apiDataResponseUser.Data);
                     return View(tuple);
                 }
 

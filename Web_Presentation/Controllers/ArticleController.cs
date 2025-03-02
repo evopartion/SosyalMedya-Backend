@@ -33,30 +33,19 @@ namespace Web_Presentation.Controllers
                 TempData["Success"] = sharedResponse.Success;
                 return RedirectToAction("Index", "Home");
             }
-            return View();
-        }
-
-        private async Task<ApiDataResponse<Article>> GetSharedResponse(HttpResponseMessage responseMessage)
-        {
-            var responseContent = await responseMessage.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<ApiDataResponse<Article>>(responseContent);
-        }
-        [Authorize(Roles = "admin,user")]
-        [HttpPost("delete-article")]
-        public async Task<IActionResult> DeleteArticle(int id)
-        {
-            var httpClient = _httpClientFactory.CreateClient();
-            var token = HttpContext.Session.GetString("Token");
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            var responseMessage = await httpClient.DeleteAsync("https://localhost:44339/api/Articles/delete?id=" + id);
-            if (responseMessage.IsSuccessStatusCode)
+            else
             {
-                var sharedResponse = await GetSharedResponse(responseMessage);
-                TempData["Message"] = sharedResponse.Message;
-                TempData["Success"] = sharedResponse.Success;
+                var errorResponse = await ValidateResponse(responseMessage);
+                TempData["Message"] = string.Join(", ", errorResponse.ValidationErrors.Select(x => x.ErrorMessage));
+                TempData["Success"] = true;
                 return RedirectToAction("Index", "Home");
             }
-            return View();
+        }
+
+        private async Task<ApiErrorResponse> ValidateResponse(HttpResponseMessage responseMessage)
+        {
+            var responseContent = await responseMessage.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<ApiErrorResponse>(responseContent);
         }
 
         [Authorize(Roles = "admin,user")]
@@ -68,14 +57,30 @@ namespace Web_Presentation.Controllers
             var content = new StringContent(jsonArticle, Encoding.UTF8, "application/json");
             var token = HttpContext.Session.GetString("Token");
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            var responseMessage = await httpClient.PostAsync("https://localhost:44339/api/Articles/update", content);
+            var responseMessage = await httpClient.PutAsync("https://localhost:44339/api/Articles/update", content);
             if (responseMessage.IsSuccessStatusCode)
             {
                 var sharedResponse = await GetSharedResponse(responseMessage);
                 TempData["Message"] = sharedResponse.Message;
                 TempData["Success"] = sharedResponse.Success;
                 return RedirectToAction("Index", "Home");
+            }
+            return RedirectToAction("Index", "Home");
+        }
 
+        [Authorize(Roles = "admin,user")]
+        [HttpPost("delete-article")]
+        public async Task<IActionResult> DeleteArticle(int id)
+        {
+            var httpClient = _httpClientFactory.CreateClient();
+            var token = HttpContext.Session.GetString("Token");
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var responseMessage = await httpClient.DeleteAsync("https://localhost:44339/api/Articles/delete?id=" + id);
+            if (responseMessage.IsSuccessStatusCode)
+            {
+                TempData["Message"] = "Paylaşım Silindi";
+                TempData["Success"] = true;
+                return RedirectToAction("Index", "Home");
             }
             return RedirectToAction("Index", "Home");
         }
@@ -91,8 +96,8 @@ namespace Web_Presentation.Controllers
                 var responseContent = await responseMessage.Content.ReadAsStringAsync();
                 var data = JsonConvert.DeserializeObject<ApiDataResponse<Article>>(responseContent);
 
-                var responseMessage1 = await httpClient.GetAsync("https://localhost:44339/api/Topics/getall");
-                if (responseMessage1.IsSuccessStatusCode)
+                var responseMessage1 = await _httpClientFactory.CreateClient().GetAsync("https://localhost:44339/api/Topics/getall");
+                if (responseMessage.IsSuccessStatusCode)
                 {
                     var jsonResponse1 = await responseMessage1.Content.ReadAsStringAsync();
                     var apiDataResponse = JsonConvert.DeserializeObject<ApiListDataResponse<Topics>>(jsonResponse1);
@@ -102,11 +107,19 @@ namespace Web_Presentation.Controllers
                         Article = data.Data,
                         Topics = apiDataResponse.Data
                     };
-
                     return Json(response);
                 }
+
             }
             return RedirectToAction("Index", "Home");
+        }
+
+
+
+        private async Task<ApiDataResponse<Article>> GetSharedResponse(HttpResponseMessage responseMessage)
+        {
+            var responseContent = await responseMessage.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<ApiDataResponse<Article>>(responseContent);
         }
     }
 }

@@ -1,7 +1,10 @@
 ﻿using Business.Abstract;
 using Core.Entities.Concrete;
+using Core.Utilities.Result.Abstract;
+using Entities.DTOs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using IResult = Core.Utilities.Result.Abstract.IResult;
 
 namespace Web_Api.Controllers
 {
@@ -15,38 +18,46 @@ namespace Web_Api.Controllers
         {
             _operationClaimService = operationClaimService;
         }
+
         [HttpGet("getall")]
-        public IActionResult GetAll()
+        public ActionResult GetAll()
         {
-            var result = _operationClaimService.GetAll();
-            return result.Success ? Ok(result) : BadRequest(result);
+            IDataResult<List<OperationClaim>> operationClaims = _operationClaimService.GetAll();
+            return operationClaims.Success ? Ok(operationClaims) : BadRequest(operationClaims);
         }
 
-        [HttpGet("getclaimsbyid")]
-        public IActionResult GetClaimsById(int claimId)
+        [HttpGet("getclaimbyusers")]
+        public IActionResult GetClaimByUsers(int claimId)
         {
-            var result = _operationClaimService.GetClaimsById(claimId);
-            return result.Success ? Ok(result) : BadRequest(result);
+            IDataResult<List<ClaimDto>> operationClaims = _operationClaimService.GetClaimByUsers(claimId);
+            return operationClaims.Success ? Ok(operationClaims) : BadRequest(operationClaims);
+        }
+
+        [HttpGet("getbyid")]
+        public ActionResult GetById(int id)
+        {
+            IDataResult<OperationClaim> operationClaim = _operationClaimService.GetEntityById(id);
+            return operationClaim.Success ? Ok(operationClaim) : BadRequest(operationClaim);
         }
 
         [HttpPost("add")]
         public IActionResult Add(OperationClaim operationClaim)
         {
-            var result = _operationClaimService.Add(operationClaim);
+            IResult result = _operationClaimService.Add(operationClaim);
             return result.Success ? Ok(result) : BadRequest(result);
         }
 
         [HttpDelete("delete")]
         public IActionResult Delete(int id)
         {
-            var result = _operationClaimService.Delete(id);
+            IResult result = _operationClaimService.Delete(id);
             return result.Success ? Ok(result) : BadRequest(result);
         }
 
         [HttpPut("update")]
         public IActionResult Update(OperationClaim operationClaim)
         {
-            var result = _operationClaimService.Update(operationClaim);
+            IResult result = _operationClaimService.Update(operationClaim);
             return result.Success ? Ok(result) : BadRequest(result);
         }
     }

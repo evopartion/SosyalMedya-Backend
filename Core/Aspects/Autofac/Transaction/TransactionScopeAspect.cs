@@ -9,7 +9,7 @@ using System.Transactions;
 
 namespace Core.Aspects.Autofac.Transaction
 {
-    public class TransactionScopeAspect: MethodInterception
+    public class TransactionScopeAspect : MethodInterception
     {
         public override void Intercept(IInvocation invocation)
         {
@@ -29,3 +29,4 @@ namespace Core.Aspects.Autofac.Transaction
         }
     }
 }
+

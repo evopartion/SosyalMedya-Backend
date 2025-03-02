@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Entities.Concrete
+namespace Entities.Models
 {
-    public class ChangePassword:IEntity
+    public class ChangePassword : IEntity
     {
         public string Email { get; set; }
         public string? OldPassword { get; set; }

@@ -4,5 +4,6 @@
     {
         public Article Article { get; set; }
         public List<Topics> Topics { get; set; }
+    
     }
 }

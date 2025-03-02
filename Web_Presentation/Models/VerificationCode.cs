@@ -2,7 +2,7 @@
 
 namespace Web_Presentation.Models
 {
-    public class VerificationCodeDto : IDto
+    public class VerificationCode 
     {
         public int UserId { get; set; }
         public string? Email { get; set; }

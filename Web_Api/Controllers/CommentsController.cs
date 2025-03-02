@@ -11,42 +11,56 @@ namespace Web_Api.Controllers
     [ApiController]
     public class CommentsController : ControllerBase
     {
-        private readonly ICommentServices _commentService;
+        ICommentService _commentService;
 
-        public CommentsController(ICommentServices commentService) => _commentService = commentService ?? throw new ArgumentNullException(nameof(commentService));
+        public CommentsController(ICommentService commentService) => _commentService = commentService ?? throw new ArgumentNullException(nameof(commentService));
 
         [HttpGet("getall")]
         public ActionResult GetAll()
         {
-            IDataResult<List<Comment>> result = _commentService.GetAll();
-            return result.Success ? Ok(result) : BadRequest(result);
+            IDataResult<List<Comment>> comments = _commentService.GetAll();
+            return comments.Success ? Ok(comments) : BadRequest(comments);
+        }
+
+        [HttpGet("gettruecomment")]
+        public ActionResult GetTrueComment()
+        {
+            IDataResult<List<Comment>> comments = _commentService.TrueComment();
+            return comments.Success ? Ok(comments) : BadRequest(comments);
+        }
+
+        [HttpGet("getfalsecomment")]
+        public ActionResult GetFalseComment()
+        {
+            IDataResult<List<Comment>> comments = _commentService.FalseComment();
+            return comments.Success ? Ok(comments) : BadRequest(comments);
         }
 
         [HttpGet("getbyid")]
         public ActionResult GetById(int id)
         {
-            IDataResult<Comment> result = _commentService.GetById(id);
-            return result.Success ? Ok(result) : BadRequest(result);
+            IDataResult<Comment> comment = _commentService.GetEntityById(id);
+            return comment.Success ? Ok(comment) : BadRequest(comment);
         }
 
         [HttpPost("add")]
-        public ActionResult Add(Comment comment)
+        public IActionResult Add(Comment comment)
         {
             IResult result = _commentService.Add(comment);
             return result.Success ? Ok(result) : BadRequest(result);
         }
 
-        [HttpPost("update")]
-        public ActionResult Update(Comment comment)
+        [HttpDelete("delete")]
+        public IActionResult Delete(int id)
         {
-            IResult result = _commentService.Update(comment);
+            IResult result = _commentService.Delete(id);
             return result.Success ? Ok(result) : BadRequest(result);
         }
 
-        [HttpDelete("delete")]
-        public ActionResult Delete(int id)
+        [HttpPut("update")]
+        public IActionResult Update(Comment comment)
         {
-            IResult result = _commentService.Delete(id);
+            IResult result = _commentService.Update(comment);
             return result.Success ? Ok(result) : BadRequest(result);
         }
     }

@@ -10,15 +10,13 @@ namespace Core.Utilities.Result.Concrete
 {
     public class DataResult<T> : Result, IDataResult<T>
     {
-        // kalıtım verince ampülden ctorları hızlıca oluşturabilirsin
-        public DataResult(T data,bool success) : base(success)
+        public DataResult(T data, bool success, string message) : base(success, message)
         {
             Data = data;
         }
 
-        public DataResult(T data,bool success, string message) : base(success, message)
+        public DataResult(T data, bool success) : base(success)
         {
-            // Üst sınıfa ek olarak eklenecek veriyi de ctora ekle
             Data = data;
         }
 

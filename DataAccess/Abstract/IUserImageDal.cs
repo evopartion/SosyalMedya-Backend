@@ -1,5 +1,6 @@
-﻿using Core.Entities;
-using static Core.DataAccess.IEntityRepository;
+﻿using Core.DataAccess;
+using Core.Entities.Concrete;
+
 
 namespace DataAccess.Abstract
 {

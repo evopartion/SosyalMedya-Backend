@@ -11,40 +11,42 @@ namespace Web_Api.Controllers
     [ApiController]
     public class TopicsController : ControllerBase
     {
-        private readonly ITopicServices _topicService;
+        ITopicService _topicService;
 
-        public TopicsController(ITopicServices topicService) => _topicService = topicService ?? throw new ArgumentNullException(nameof(topicService));
+        public TopicsController(ITopicService topicService) => _topicService = topicService ?? throw new ArgumentNullException(nameof(topicService));
 
         [HttpGet("getall")]
         public ActionResult GetAll()
         {
-            IDataResult<List<Topic>> result = _topicService.GetAll();
-            return result.Success ? Ok(result) : BadRequest(result);
+            IDataResult<List<Topic>> topics = _topicService.GetAll();
+            return topics.Success ? Ok(topics) : BadRequest(topics);
         }
+
         [HttpGet("getbyid")]
         public ActionResult GetById(int id)
         {
-            IDataResult<Topic> result = _topicService.GetById(id);
-            return result.Success ? Ok(result) : BadRequest(result);
+            IDataResult<Topic> topic = _topicService.GetEntityById(id);
+            return topic.Success ? Ok(topic) : BadRequest(topic);
         }
+
         [HttpPost("add")]
-        public ActionResult Add(Topic topic)
+        public IActionResult Add(Topic topic)
         {
             IResult result = _topicService.Add(topic);
             return result.Success ? Ok(result) : BadRequest(result);
         }
 
-        [HttpPut("update")]
-        public ActionResult Update(Topic topic)
+        [HttpDelete("delete")]
+        public IActionResult Delete(int id)
         {
-            IResult result = _topicService.Update(topic);
+            IResult result = _topicService.Delete(id);
             return result.Success ? Ok(result) : BadRequest(result);
         }
 
-        [HttpDelete("delete")]
-        public ActionResult Delete(int id)
+        [HttpPut("update")]
+        public IActionResult Update(Topic topic)
         {
-            IResult result = _topicService.Delete(id);
+            IResult result = _topicService.Update(topic);
             return result.Success ? Ok(result) : BadRequest(result);
         }
     }

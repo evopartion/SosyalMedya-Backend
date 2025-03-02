@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Web_Presentation.Models;
+using ArticleDetailDto = Web_Presentation.Models.ArticleDetailDto;
 
 namespace Web_Presentation.ViewComponents.RightSide
 {
@@ -27,7 +28,7 @@ namespace Web_Presentation.ViewComponents.RightSide
                 if (responseArticleMessage.IsSuccessStatusCode)
                 {
                     var jsonArticleResponse = await responseArticleMessage.Content.ReadAsStringAsync();
-                    var apiArticleDataResponse = JsonConvert.DeserializeObject<ApiListDataResponse<ArticleDetail>>(jsonArticleResponse);
+                    var apiArticleDataResponse = JsonConvert.DeserializeObject<ApiListDataResponse<ArticleDetailDto>>(jsonArticleResponse);
 
                     var groupByTopicTitle = apiArticleDataResponse.Data.GroupBy(x => x.TopicTitle);
 

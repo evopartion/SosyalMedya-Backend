@@ -1,4 +1,4 @@
-﻿using Core.DataAccess;
+﻿using Core.DataAccess.EntityFramework;
 using Core.Entities.Concrete;
 using DataAccess.Abstract;
 using DataAccess.Concrete.Context;
@@ -7,21 +7,21 @@ using System.Linq.Expressions;
 
 namespace DataAccess.Concrete.EntityFramework
 {
-    public class EfOperationClaimDal : EfEntityRepository<OperationClaim, SocialMediaContext>, IOperationClaimDal
+    public class EfOperationClaimDal : EfEntityRepositoryBase<OperationClaim, SocialMediaContext>, IOperationClaimDal
     {
-        public List<ClaimDto> GetClaimById(Expression<Func<ClaimDto, bool>> filter = null)
+        public List<ClaimDto> GetClaims(Expression<Func<ClaimDto, bool>> filter = null)
         {
             using (var context = new SocialMediaContext())
             {
                 var result = from operationClaim in context.OperationClaims
-                             join userOperationClaim in context.UserOperationClaims on operationClaim.ID equals userOperationClaim.OperationClaimID
-                             join user in context.Users on userOperationClaim.UserID equals user.ID
+                             join userOperationClaim in context.UserOperationClaims on operationClaim.Id equals userOperationClaim.OperationClaimId
+                             join user in context.Users on userOperationClaim.UserId equals user.Id
                              select new ClaimDto
                              {
-                                 Id = userOperationClaim.ID,
-                                 UserId = user.ID,
+                                 Id = userOperationClaim.Id,
+                                 UserId = user.Id,
                                  UserName = user.FirstName + " " + user.LastName,
-                                 OperationClaimId = operationClaim.ID,
+                                 OperationClaimId = operationClaim.Id,
                                  ClaimName = operationClaim.Name
                              };
                 return filter == null
@@ -29,6 +29,5 @@ namespace DataAccess.Concrete.EntityFramework
                     : result.Where(filter).ToList();
             }
         }
-
     }
 }

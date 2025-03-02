@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Web_Presentation.Models;
+using ArticleDetailDto = Web_Presentation.Models.ArticleDetailDto;
 
 namespace Web_Presentation.ViewComponents.NotSeenComment
 {
@@ -27,7 +28,7 @@ namespace Web_Presentation.ViewComponents.NotSeenComment
             {
                 var jsonResponse = await responseMessage.Content.ReadAsStringAsync();
 
-                var apiDataResponse = JsonConvert.DeserializeObject<ApiListDataResponse<ArticleDetail>>(jsonResponse);
+                var apiDataResponse = JsonConvert.DeserializeObject<ApiListDataResponse<ArticleDetailDto>>(jsonResponse);
 
                 int notSeenComment = apiDataResponse.Data
                     .SelectMany(article => article.CommentDetails)

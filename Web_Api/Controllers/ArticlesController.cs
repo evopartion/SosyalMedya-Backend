@@ -6,20 +6,29 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using IResult = Core.Utilities.Result.Abstract.IResult;
 
+
+using Core.Utilities.Result.Abstract;
+using Entities.Concrete;
+using Entities.DTOs;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
+
 namespace Web_Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     public class ArticlesController : ControllerBase
     {
-        private readonly IArticleServices _articleService;
+        IArticleServices _articleService;
 
         public ArticlesController(IArticleServices articleService) => _articleService = articleService ?? throw new ArgumentNullException(nameof(articleService));
+
         [HttpGet("getarticlewithdetails")]
         public ActionResult GetDetails()
         {
-            IDataResult<List<ArticleDetailDto>> result = _articleService.GetArticleDetails();
-            return result.Success ? Ok(result) : BadRequest(result);
+            IDataResult<List<ArticleDetailDto>> articles = _articleService.GetArticleDetails();
+            return articles.Success ? Ok(articles) : BadRequest(articles);
         }
 
         [HttpGet("getarticlewithdetailsbyid")]
@@ -39,34 +48,36 @@ namespace Web_Api.Controllers
         [HttpGet("getall")]
         public ActionResult GetAll()
         {
-            IDataResult<List<Article>> result = _articleService.GetAll();
-            return result.Success ? Ok(result) : BadRequest(result);
+            IDataResult<List<Article>> articles = _articleService.GetAll();
+            return articles.Success ? Ok(articles) : BadRequest(articles);
         }
+
         [HttpGet("getbyid")]
         public ActionResult GetById(int id)
         {
-            IDataResult<Article> result = _articleService.GetById(id);
-            return result.Success ? Ok(result) : BadRequest(result);
-        }
-        [HttpPost("add")]
-        public ActionResult Add(Article article)
-        {
-            IResult result = _articleService.Add(article);
-            return result.Success ? Ok(result) : BadRequest(result);
+            IDataResult<Article> articles = _articleService.GetEntityById(id);
+            return articles.Success ? Ok(articles) : BadRequest(articles);
         }
 
-        [HttpPost("update")]
-        public ActionResult Update(Article article)
+        [HttpPost("add")]
+        public IActionResult Add(Article article)
         {
-            IResult result = _articleService.Update(article);
-            return result.Success ? Ok(result) : BadRequest(result);
+            IResult articles = _articleService.Add(article);
+            return articles.Success ? Ok(articles) : BadRequest(articles);
         }
 
         [HttpDelete("delete")]
-        public ActionResult Delete(int id)
+        public IActionResult Delete(int id)
         {
-            IResult result = _articleService.Delete(id);
-            return result.Success ? Ok(result) : BadRequest(result);
+            IResult articles = _articleService.Delete(id);
+            return articles.Success ? Ok(articles) : BadRequest(articles);
+        }
+
+        [HttpPut("update")]
+        public IActionResult Update(Article article)
+        {
+            IResult articles = _articleService.Update(article);
+            return articles.Success ? Ok(articles) : BadRequest(articles);
         }
     }
 }

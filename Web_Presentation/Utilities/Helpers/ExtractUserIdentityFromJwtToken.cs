@@ -7,7 +7,7 @@ namespace Web_Presentation.Utilities.Helpers
     {
         public static int GetUserIdentityFromJwtToken(string jwtToken)
         {
-            var handler= new JwtSecurityTokenHandler();
+            var handler = new JwtSecurityTokenHandler();
             var jsonToken = handler.ReadToken(jwtToken) as JwtSecurityToken;
             int userId = Convert.ToInt32(jsonToken?.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier)?.Value);
             return userId;

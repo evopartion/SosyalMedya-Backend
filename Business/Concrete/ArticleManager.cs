@@ -3,6 +3,7 @@ using Business.BusinessAspects.Autofac;
 using Business.Constants;
 using Core.Aspects.Autofac.Caching;
 using Core.Aspects.Autofac.Logging;
+using Core.Aspects.Autofac.Validation;
 using Core.CrossCuttingConncerns.Logging.Log4Net.Logger;
 using Core.Utilities.Result.Abstract;
 using Core.Utilities.Result.Concrete;
@@ -19,40 +20,54 @@ namespace Business.Concrete
 {
     public class ArticleManager : IArticleServices
     {
+        private readonly IArticleDal _articleDal;
+        private readonly ICommentDal _commentDal;
 
-
-        IArticleDal _articleDal;
-        // dalı çağırdıktan sonra oto ctor
-        public ArticleManager(IArticleDal articleDal)
+        public ArticleManager(IArticleDal articleDal, ICommentDal commentDal)
         {
             _articleDal = articleDal;
+            _commentDal = commentDal;
         }
-        // Miras verdikten sonra iplement et otomatik oluşur
+
+        [LogAspect(typeof(FileLogger))]
+        //[ValidationAspect(typeof(ArticleValidator))]
         [SecuredOperation("admin,user")]
         [CacheRemoveAspect("IArticleService.Get")]
-        [LogAspect(typeof(FileLogger))]
         public IResult Add(Article entity)
         {
             _articleDal.Add(entity);
-            // addfield
-            return new SuccessResult(Messages.Article_Add);
+            return new SuccessResult(Messages.ArticleAdded);
         }
+
+        [LogAspect(typeof(FileLogger))]
         [SecuredOperation("admin,user")]
         [CacheRemoveAspect("IArticleService.Get")]
-        [LogAspect(typeof(FileLogger))]
         public IResult Delete(int id)
         {
-            var deleteArticle=_articleDal.Get(x=>x.ID == id);
-            _articleDal.Delete(deleteArticle);
-            return new SuccessResult(Messages.Article_Deleted);
+            var deletedArticle = _articleDal.Get(x => x.Id == id);
+            if (deletedArticle != null)
+            {
+                var deletedComment = _commentDal.GetAll(x => x.ArticleId == deletedArticle.Id);
+                if (deletedComment != null)
+                {
+                    foreach (var item in deletedComment)
+                    {
+                        _commentDal.Delete(item);
+                    }
+                }
+                _articleDal.Delete(deletedArticle);
+                return new SuccessResult(Messages.ArticleDeleted);
+            }
+            return new ErrorResult(Messages.ArticleNotFound);
         }
-        // 10 dakika bellekte tut
-        [CacheAspect(10)]
+
+        [CacheAspect(1)]
         public IDataResult<List<Article>> GetAll()
         {
-            return new SuccessDataResult<List<Article>>(_articleDal.GetAll(), Messages.Articleses_Listed);
+            return new SuccessDataResult<List<Article>>(_articleDal.GetAll(), Messages.ArticlesListed);
         }
-        [CacheAspect(10)]
+
+        // [CacheAspect(10)]
         public IDataResult<List<ArticleDetailDto>> GetArticleDetails()
         {
             return new SuccessDataResult<List<ArticleDetailDto>>(_articleDal.GetArticleDetails(), Messages.ArticleWithDetailListed);
@@ -67,23 +82,22 @@ namespace Business.Concrete
         {
             return new SuccessDataResult<List<ArticleDetailDto>>(_articleDal.GetArticleDetails(x => x.UserId == id), Messages.ArticleWithDetailListed);
         }
-        IDataResult<ArticleDetailDto> IArticleServices.GetArticleDetailsById(int id)
+
+        //[CacheAspect(10)]
+        public IDataResult<Article> GetEntityById(int id)
         {
-            throw new NotImplementedException();
+            return new SuccessDataResult<Article>(_articleDal.Get(x => x.Id == id), Messages.ArticleListed);
         }
-        [CacheAspect(10)]
-        public IDataResult<Article> GetById(int id)
-        {
-            return new SuccessDataResult<Article>(_articleDal.Get(x => x.ID == id), Messages.Articleem_Listed);
-        }
+
+        [LogAspect(typeof(FileLogger))]
+        //[ValidationAspect(typeof(ArticleValidator))]
         [SecuredOperation("admin,user")]
         [CacheRemoveAspect("IArticleService.Get")]
         public IResult Update(Article entity)
         {
             _articleDal.Update(entity);
-            return new SuccessResult(Messages.Article_Edit);
+            return new SuccessResult(Messages.ArticleUpdated);
         }
 
-        
     }
 }

@@ -5,7 +5,9 @@ namespace Entities.Concrete
 {
     public class Topic : IEntity
     {
-        public int ID { get; set; }
+        public int Id { get; set; }
         public string TopicTitle { get; set; }
+        public DateTime Date { get; set; }
+        public bool Status { get; set; }
     }
 }

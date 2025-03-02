@@ -4,28 +4,39 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Diagnostics;
 using Web_Presentation.Models;
+using ArticleDetailDto = Web_Presentation.Models.ArticleDetailDto;
+
 
 namespace Web_Presentation.Controllers
 {
     public class HomeController : Controller
     {
-        [Authorize(Roles ="admin")]
+        private readonly IHttpClientFactory _httpClientFactory;
+
+        public HomeController(IHttpClientFactory httpClientFactory)
+        {
+            _httpClientFactory = httpClientFactory;
+        }
+
+        [Authorize(Roles = "admin,user")]
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var httpClient=new HttpClient();
+            var httpClient = _httpClientFactory.CreateClient();
             var responseMessage = await httpClient.GetAsync("https://localhost:44339/api/Articles/getarticlewithdetails");
             if (responseMessage.IsSuccessStatusCode)
             {
-                ViewData["UserId"] = HttpContext.Session.GetInt32("UserId");
                 var jsonResponse = await responseMessage.Content.ReadAsStringAsync();
                 var apiDataResponse = JsonConvert.DeserializeObject<ApiListDataResponse<ArticleDetailDto>>(jsonResponse);
+                ViewData["UserId"] = HttpContext.Session.GetInt32("UserId");
+                ViewData["UserName"] = HttpContext.Session.GetString("UserName");
 
-                int myArticle = apiDataResponse.Data.Count(x => x.UserId == Convert.ToInt32(ViewData["UserId"]));
-                HttpContext.Session.SetInt32("MyArticle", myArticle);
-                ViewData["MyArticle"] = myArticle;
+                int myArticleCount = apiDataResponse.Data.Count(x => x.UserId == Convert.ToInt32(ViewData["UserId"]));
 
-                return apiDataResponse.Success ? View(apiDataResponse.Data) : (IActionResult)View("veri gelmiyor");
+                HttpContext.Session.SetInt32("MyArticle", apiDataResponse.Data.Count(x => x.UserId == Convert.ToInt32(ViewData["UserId"])));
+                ViewData["MyArticle"] = myArticleCount;
+
+                return apiDataResponse.Success ? View(apiDataResponse.Data) : (IActionResult)View("Veri gelmiyor");
             }
             return View("Veri gelmiyor");
         }

@@ -1,5 +1,4 @@
-﻿using Core.DataAccess;
-using Core.Entities.Concrete;
+﻿using Core.Entities.Concrete;
 using DataAccess.Abstract;
 using DataAccess.Concrete.Context;
 using Entities;
@@ -12,10 +11,11 @@ using System.Text;
 using System.Threading.Tasks;
 using Core;
 using Core.Entities;
+using Core.DataAccess.EntityFramework;
 
 namespace DataAccess.Concrete.EntityFramework
 {
-    public class EfUserDal : EfEntityRepository<User, SocialMediaContext>, IUserDal
+    public class EfUserDal : EfEntityRepositoryBase<User, SocialMediaContext>, IUserDal
     {
         public List<OperationClaim> GetClaims(User user)
         {
@@ -23,9 +23,9 @@ namespace DataAccess.Concrete.EntityFramework
             {
                 var result = from operationClaim in context.OperationClaims
                              join userOperationClaim in context.UserOperationClaims
-                             on operationClaim.ID equals userOperationClaim.OperationClaimID
-                             where userOperationClaim.UserID == user.ID
-                             select new OperationClaim { ID = operationClaim.ID, Name = operationClaim.Name };
+                                 on operationClaim.Id equals userOperationClaim.OperationClaimId
+                             where userOperationClaim.UserId == user.Id
+                             select new OperationClaim { Id = operationClaim.Id, Name = operationClaim.Name };
                 return result.ToList();
             }
         }
@@ -35,12 +35,11 @@ namespace DataAccess.Concrete.EntityFramework
             using (var context = new SocialMediaContext())
             {
                 var result = from user in context.Users
-                             join userImage in context.UserImages on user.ID equals userImage.UserId into userImagesGroup
+                             join userImage in context.UserImages on user.Id equals userImage.UserId into userImagesGroup
                              from userImage in userImagesGroup.DefaultIfEmpty()
-
                              select new UserDto
                              {
-                                 Id = user.ID,
+                                 Id = user.Id,
                                  Email = user.Email,
                                  FirstName = user.FirstName,
                                  LastName = user.LastName,
@@ -49,10 +48,12 @@ namespace DataAccess.Concrete.EntityFramework
                                  ImageId = userImage.Id,
                                  ImagePath = userImage != null ? userImage.ImagePath : string.Empty
                              };
+
                 return filter == null
                     ? result.ToList()
                     : result.Where(filter).ToList();
             }
         }
+
     }
 }

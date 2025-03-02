@@ -12,49 +12,90 @@ namespace Web_Api.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private IUserServices _userServices;
+        private readonly IUserService _userService;
 
-        public UsersController(IUserServices userServices)
+        public UsersController(IUserService userService)
         {
-            _userServices = userServices;
+            _userService = userService;
         }
+
         [HttpGet("getall")]
-        public ActionResult GetAll()
+        public IActionResult GetAll()
         {
-            IDataResult<List<User>> result = _userServices.GetAll();
-            return result.Success ? Ok(result) : BadRequest();
+
+            IDataResult<List<User>> result = _userService.GetAll();
+            return result.Success ? Ok(result) : BadRequest(result);
         }
+
         [HttpGet("getalldto")]
-        public ActionResult GetAllDto()
+        public IActionResult GetAllDto()
         {
-            IDataResult<List<UserDto>> result = _userServices.GetAllDto();
+
+            IDataResult<List<UserDto>> result = _userService.GetAllDto();
             return result.Success ? Ok(result) : BadRequest(result);
         }
+
+        [HttpGet("getbyemail")]
+        public IActionResult GetByEmail(string email)
+        {
+
+            IDataResult<UserDto> result = _userService.GetUserDtoByMail(email);
+            return result.Success ? Ok(result) : BadRequest(result);
+        }
+
         [HttpGet("getbyid")]
-        public IActionResult GetByID(int id)
+        public IActionResult GetById(int id)
         {
-            IDataResult<UserDto> result=_userServices.GetUserDtoById(id);
-            return result.Success ? Ok(result) : BadRequest();
+            IDataResult<UserDto> result = _userService.GetUserDtoById(id);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
         }
-        [HttpPost("add")]
-        public IActionResult Add(User user)
+        [HttpGet("getclaims")]
+        public IActionResult GetClaims(User user)
         {
-            IResult result = _userServices.Add(user);
-            return result.Success ? Ok(result) : BadRequest(result);
+            var result = _userService.GetClaims(user);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
+
+        [HttpPost("add")]
+        public async Task<IActionResult> Add(User user)
+        {
+            IResult result = _userService.Add(user);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
         }
 
         [HttpDelete("delete")]
-        public IActionResult Delete([FromForm] int id)
+        public IActionResult Delete(int id)
         {
-            IResult result = _userServices.DeleteByID(id);
-            return result.Success ? Ok(result) : BadRequest(result);
+            IResult result = _userService.Delete(id);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
         }
 
         [HttpPost("update")]
         public IActionResult Update(UserDto user)
         {
-            IResult result = _userServices.UpdateByDto(user);
-            return result.Success ? Ok(result) : BadRequest(result);
+            IResult result = _userService.UpdateByDto(user);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
         }
+
     }
 }

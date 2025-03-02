@@ -2,7 +2,7 @@
 
 namespace Core.Extensions.Exception
 {
-    public class ValidationErrorDetails:ErrorDetails
+    public class ValidationErrorDetails : ErrorDetails
     {
         public IEnumerable<ValidationFailure> ValidationErrors { get; set; }
     }

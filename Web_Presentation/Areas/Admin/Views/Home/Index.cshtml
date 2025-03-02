@@ -1,66 +1,67 @@
-﻿@using Entities.DTOs
-
+﻿
 @model List<ArticleDetailDto>
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
+
+
 <div class="col-12">
     <div class="card">
         <div class="card-header">
-            <h5 class="card-title">
+            <h5 class="card-title d-inline">
                 Paylaşımlar
             </h5>
+            <button class="btn btn-outline-primary float-end" style="font-size:1.25rem;"><i class="bi bi-plus-square-dotted fw-bold"></i> Ekle</button>
         </div>
         <div class="card-body">
-            <div class="table-responsive">
-                <table class="table" id="table1">
-                    <thead>
+            <table class="table table-striped" id="table1">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Kullanıcı Adı</th>
+                        <th>Yorum Sayısı</th>
+                        <th>Paylaşım Tarihi</th>
+                        <th class="text-center">İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
                         <tr>
-                            <th>#</th>
-                            <th>Kullanıcı Adı</th>
-                            <th>Yorum Sayısı</th>
-                            <th>Paylaşım Tarihi</th>
-                            <th>İşlemler</th>
+                            <td class="fw-bolder">@item.Id</td>
+                            <td>@item.UserName</td>
+                            <td>@item.CommentDetails.Count()</td>
+                            <td>@item.SharingDate</td>
+                            <td class="d-flex justify-content-center">
+                                <a class="btn btn-outline-success " href="/Admin/Home/Detail/@item.Id">
+                                    <i class="bi bi-eye-fill"></i>
+                                </a>
+                                <a class="btn btn-outline-warning mx-2 update-button" href="/Admin/Home/GetUpdateArticle/@item.Id">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                                <button class="btn btn-outline-danger delete-button" data-id="@item.Id" >
+                                    <i class="bi bi-trash"></i>
+                                </button>
+
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in Model)
-                        {
-                            <tr>
-                                <td>@item.Id</td>
-                                <td>@item.UserName</td>
-                                <td>@item.CommentDetails.Where(x => x.Id != -1).Count()</td>
-                                <td>@item.SharingDate</td>
-                                <td class="d-flex justify-content-center">
-                                    <a class="btn btn-outline-success " href="/Admin/Home/Detail/@item.Id">
-                                        <i class="bi bi-eye-fill"></i>
-                                    </a>
-                                    <a class="btn btn-outline-warning mx-2 update-button" href="/Admin/Home/GetUpdateArticle/@item.Id">
-                                        <i class="bi bi-pencil-square"></i>
-                                    </a>
-                                    <button class="btn btn-outline-danger delete-btn" data-id="@item.Id">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                        }
+                    }
 
-
-                    </tbody>
-                </table>
-            </div>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
 
 
+@section scripts{
 
 
-@section scripts {
     <script>
         $(document).ready(function () {
+            
             function Toast(message) {
                 Toastify({
                     text: message,
@@ -72,24 +73,71 @@
                 }).showToast();
             }
 
-            $(".delete-btn").on("click", function (e) {
+            $(".update-button").on("click", function () {
+                var id = $(this).data("id");
+                $(".note-editor").addClass("w-100");
+                console.log(id);
+                $.ajax({
+                    type: "GET",
+                    url: "https://localhost:7110/Admin/Home/GetArticle/" + id,
+                    success: function (response) {
+                        console.log(response);
+                        $("#Id").val(id);
+                        $("#summernote").summernote('code', response.article.content);
+                        var tag = $(".select-topic");
+                        tag.empty();
+                        $.each(response.topics, function (index, item) {
+                            console.log(item.topicTitle);
+                            var option = `<option value="${item.id}" ${item.id == response.article.topicId ? 'selected' : ''}>${item.topicTitle}</option>`;
+                            tag.append(option);
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Ajax Error:", error);
+                    },
+                });
+
+            });
+
+            $(".update-article").on("click", function () {
+                var id = $(this).data("id");
+
+                console.log(id);
+                $.ajax({
+                    type: "GET",
+                    url: "https://localhost:7110/Admin/Home/GetArticle/" + id,
+                    success: function (response) {
+                        $("#summernote").summernote('code', response.article.content);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Ajax Error:", error);
+                    },
+                });
+
+            });
+
+            $(".delete-button").on("click", function (e) {
                 e.preventDefault();
                 var id = $(this).data("id");
+
                 $.ajax({
                     type: "DELETE",
-                    url: "/Admin/Home/Delete/" + id,
+                    url: "https://localhost:7110/Admin/Home/Delete/" + id,
                     success: function (response) {
                         Toast(response.message);
 
                         setTimeout(function () {
-                            window.location.reload();
+                            window.location.href = response.url;
                         }, 3000);
-                    }, error: function (xhr, status, error) {
-                        console.error(error);
-                    }
-                })
-            })
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Ajax Error:", error);
+                    },
+                });
 
-        })
+            });
+
+        });
     </script>
+
 }

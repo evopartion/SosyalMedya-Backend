@@ -6,5 +6,6 @@ namespace Web_Presentation.Models
     {
         public int Id { get; set; }
         public string TopicTitle { get; set; }
+        public bool Status { get; set; }
     }
 }

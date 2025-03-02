@@ -12,6 +12,7 @@ using Microsoft.OpenApi.Models;
 using Business.Concrete;
 using Core.DepencyResolvers;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory()).ConfigureContainer<ContainerBuilder>(builder =>

@@ -8,13 +8,12 @@ namespace Core.Utilities.Result.Concrete
 {
     public class SuccessResult : Result
     {
-        // başarılı olan durum için
         public SuccessResult() : base(true)
         {
 
         }
 
-        public SuccessResult(string message) : base(true,message)
+        public SuccessResult(string message) : base(true, message)
         {
 
         }

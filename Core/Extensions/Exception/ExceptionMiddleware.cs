@@ -14,7 +14,7 @@ namespace Core.Extensions.Exception
 {
     public class ExceptionMiddleware
     {
-        RequestDelegate _next;
+        private RequestDelegate _next;
 
         public ExceptionMiddleware(RequestDelegate next)
         {

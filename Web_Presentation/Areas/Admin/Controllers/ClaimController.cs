@@ -6,13 +6,15 @@ using Newtonsoft.Json;
 using System.Net.Http.Headers;
 using System.Text;
 using Web_Presentation.Models;
+using OperationClaim = Web_Presentation.Models.OperationClaim;
+using UserOperationClaim = Web_Presentation.Models.UserOperationClaim;
 
 namespace Web_Presentation.Areas.Admin.Controllers
 {
-    
-        [Area("Admin")]
-        public class ClaimController : Controller
-        {
+
+    [Area("Admin")]
+    public class ClaimController : Controller
+    {
         private readonly IHttpClientFactory _httpClientFactory;
 
         public ClaimController(IHttpClientFactory httpClientFactory)
@@ -24,11 +26,11 @@ namespace Web_Presentation.Areas.Admin.Controllers
         public async Task<IActionResult> Index()
         {
 
-            var responseMessage = await _httpClientFactory.CreateClient().GetAsync("http://localhost:65527/api/OperationClaims/getall");
+            var responseMessage = await _httpClientFactory.CreateClient().GetAsync("https://localhost:44339/api/OperationClaims/getall");
             if (responseMessage.IsSuccessStatusCode)
             {
                 var jsonResponse = await responseMessage.Content.ReadAsStringAsync();
-                var apiDataResponse = JsonConvert.DeserializeObject<ApiListDataResponse<Core.Entities.Concrete.OperationClaim>>(jsonResponse);
+                var apiDataResponse = JsonConvert.DeserializeObject<ApiListDataResponse<OperationClaim>>(jsonResponse);
                 ViewData["UserName"] = HttpContext.Session.GetString("UserName");
                 return apiDataResponse.Success ? View(apiDataResponse.Data) : View("Veri gelmiyor");
             }
@@ -37,14 +39,14 @@ namespace Web_Presentation.Areas.Admin.Controllers
 
         [Authorize(Roles = "admin")]
         [HttpPost]
-        public async Task<IActionResult> Add(Core.Entities.Concrete.OperationClaim operationClaim)
+        public async Task<IActionResult> Add(OperationClaim operationClaim)
         {
             var httpClient = _httpClientFactory.CreateClient();
             var jsonClaim = JsonConvert.SerializeObject(operationClaim);
             var content = new StringContent(jsonClaim, Encoding.UTF8, "application/json");
             var token = HttpContext.Session.GetString("Token");
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            var responseMessage = await httpClient.PostAsync("http://localhost:65527/api/OperationClaims/add", content);
+            var responseMessage = await httpClient.PostAsync("https://localhost:44339/api/OperationClaims/add", content);
             if (responseMessage.IsSuccessStatusCode)
             {
                 return RedirectToAction("Index", "Claim", new { area = "Admin" });
@@ -56,7 +58,7 @@ namespace Web_Presentation.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> Detail(int id)
         {
-            var responseMessage = await _httpClientFactory.CreateClient().GetAsync("http://localhost:65527/api/OperationClaims/getclaimbyusers?claimId=" + id);
+            var responseMessage = await _httpClientFactory.CreateClient().GetAsync("https://localhost:44339/api/OperationClaims/getclaimbyusers?claimId=" + id);
             if (responseMessage.IsSuccessStatusCode)
             {
                 ViewBag.ClaimId = id;
@@ -70,18 +72,18 @@ namespace Web_Presentation.Areas.Admin.Controllers
 
         [Authorize(Roles = "admin")]
         [HttpPut]
-        public async Task<IActionResult> UserClaimUpdate(Models.UserOperationClaim userOperationClaim)
+        public async Task<IActionResult> UserClaimUpdate(UserOperationClaim userOperationClaim)
         {
             var httpClient = _httpClientFactory.CreateClient();
             var jsonData = JsonConvert.SerializeObject(userOperationClaim);
             var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
             var token = HttpContext.Session.GetString("Token");
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            var responseMessage = await httpClient.PutAsync("http://localhost:65527/api/UserOperationClaims/update", content);
+            var responseMessage = await httpClient.PutAsync("https://localhost:44339/api/UserOperationClaims/update", content);
             if (responseMessage.IsSuccessStatusCode)
             {
                 var responseContent = await responseMessage.Content.ReadAsStringAsync();
-                var data = JsonConvert.DeserializeObject<ApiDataResponse<Models.UserOperationClaim>>(responseContent);
+                var data = JsonConvert.DeserializeObject<ApiDataResponse<UserOperationClaim>>(responseContent);
                 var response = new
                 {
                     Message = data.Message
@@ -93,18 +95,18 @@ namespace Web_Presentation.Areas.Admin.Controllers
 
         [Authorize(Roles = "admin")]
         [HttpPost]
-        public async Task<IActionResult> UserClaimAdd(Models.UserOperationClaim userOperationClaim)
+        public async Task<IActionResult> UserClaimAdd(UserOperationClaim userOperationClaim)
         {
             var httpClient = _httpClientFactory.CreateClient();
             var jsonData = JsonConvert.SerializeObject(userOperationClaim);
             var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
             var token = HttpContext.Session.GetString("Token");
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            var responseMessage = await httpClient.PostAsync("http://localhost:65527/api/UserOperationClaims/add", content);
+            var responseMessage = await httpClient.PostAsync("https://localhost:44339/api/UserOperationClaims/add", content);
             if (responseMessage.IsSuccessStatusCode)
             {
                 var responseContent = await responseMessage.Content.ReadAsStringAsync();
-                var data = JsonConvert.DeserializeObject<ApiDataResponse<Models.UserOperationClaim>>(responseContent);
+                var data = JsonConvert.DeserializeObject<ApiDataResponse<UserOperationClaim>>(responseContent);
                 var response = new
                 {
                     Message = data.Message
@@ -116,18 +118,18 @@ namespace Web_Presentation.Areas.Admin.Controllers
 
         [Authorize(Roles = "admin")]
         [HttpPut]
-        public async Task<IActionResult> ClaimUpdate(Core.Entities.Concrete.OperationClaim operationClaim)
+        public async Task<IActionResult> ClaimUpdate(OperationClaim operationClaim)
         {
             var httpClient = _httpClientFactory.CreateClient();
             var jsonData = JsonConvert.SerializeObject(operationClaim);
             var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
             var token = HttpContext.Session.GetString("Token");
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            var responseMessage = await httpClient.PutAsync("http://localhost:65527/api/OperationClaims/update", content);
+            var responseMessage = await httpClient.PutAsync("https://localhost:44339/api/OperationClaims/update", content);
             if (responseMessage.IsSuccessStatusCode)
             {
                 var responseContent = await responseMessage.Content.ReadAsStringAsync();
-                var data = JsonConvert.DeserializeObject<ApiDataResponse<Core.Entities.Concrete.UserOperationClaim>>(responseContent);
+                var data = JsonConvert.DeserializeObject<ApiDataResponse<UserOperationClaim>>(responseContent);
                 var response = new
                 {
                     Message = data.Message
@@ -144,7 +146,7 @@ namespace Web_Presentation.Areas.Admin.Controllers
             var httpClient = _httpClientFactory.CreateClient();
             var token = HttpContext.Session.GetString("Token");
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            var responseMessage = await httpClient.DeleteAsync("http://localhost:65527/api/OperationClaims/delete?id=" + id);
+            var responseMessage = await httpClient.DeleteAsync("https://localhost:44339/api/OperationClaims/delete?id=" + id);
             if (responseMessage.IsSuccessStatusCode)
             {
                 var jsonResponse = await responseMessage.Content.ReadAsStringAsync();
@@ -167,11 +169,11 @@ namespace Web_Presentation.Areas.Admin.Controllers
             var httpClient = _httpClientFactory.CreateClient();
             var token = HttpContext.Session.GetString("Token");
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            var responseMessage = await httpClient.DeleteAsync($"http://localhost:65527/api/UserOperationClaims/delete?userId={userId}&claimId={claimId}");
+            var responseMessage = await httpClient.DeleteAsync($"https://localhost:44339/api/UserOperationClaims/delete?userId={userId}&claimId={claimId}");
             if (responseMessage.IsSuccessStatusCode)
             {
                 var jsonResponse = await responseMessage.Content.ReadAsStringAsync();
-                var apiDataResponse = JsonConvert.DeserializeObject<ApiDataResponse<Models.UserOperationClaim>>(jsonResponse);
+                var apiDataResponse = JsonConvert.DeserializeObject<ApiDataResponse<UserOperationClaim>>(jsonResponse);
 
                 var response = new
                 {
@@ -183,5 +185,5 @@ namespace Web_Presentation.Areas.Admin.Controllers
 
         }
     }
-    }
+}
 

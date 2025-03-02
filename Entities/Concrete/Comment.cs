@@ -4,9 +4,9 @@ namespace Entities.Concrete
 {
     public class Comment : IEntity
     {
-        public int ID { get; set; }
-        public int ArticleID { get; set; }
-        public int UserID { get; set; }
+        public int Id { get; set; }
+        public int ArticleId { get; set; }
+        public int UserId { get; set; }
         public string CommentText { get; set; }
         public DateTime CommentDate { get; set; }
         public bool Status { get; set; }

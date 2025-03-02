@@ -7,7 +7,8 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Business.Abstract
-{   public interface ICommentServices : IServiceRepository<Comment>
+{
+    public interface ITopicService : IServiceRepository<Topic>
     {
 
     }

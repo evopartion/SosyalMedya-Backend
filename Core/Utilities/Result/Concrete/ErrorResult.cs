@@ -2,7 +2,6 @@
 {
     public class ErrorResult : Result
     {
-        // başarılı olan durum için
         public ErrorResult() : base(false)
         {
 
