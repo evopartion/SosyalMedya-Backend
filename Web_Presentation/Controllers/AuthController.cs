@@ -210,7 +210,7 @@ namespace Web_Presentation.Controllers
                 var response = new
                 {
                     Success = false,
-                    Message = "Şifre güncellenemedi, lütfen tekrara deneyin"
+                    Message = "Şifre güncellenemedi, lütfen tekrar deneyin"
                 };
                 return Json(response);
             }

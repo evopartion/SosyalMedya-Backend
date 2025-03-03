@@ -82,5 +82,7 @@ namespace Business.Constants
         public static string ArticleNotFound = "Silinecek Article Bulunamadı";
         public static string ClaimExist = "Bu yetki zaten var";
         public static string UserClaimExist = "Bu kullanıcını bu yetkiye zaten sahip";
+        internal static string VerifyCodesDeleted;
+        internal static string userEmailNotAvailable;
     }
 }

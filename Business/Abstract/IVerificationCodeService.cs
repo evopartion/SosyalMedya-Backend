@@ -11,10 +11,10 @@ namespace Business.Abstract
 {
     public interface IVerificationCodeService
     {
-        IResult SendVerificationCode(VerificationCodeDto verificationCode);
-        IResult SendCodeForPasswordReset(ResetPassword resetPassword);
+        IResult SendVerifyCode(VerificationCodeDto verificationCode);
+        IResult SendCodeForgotPassword(ResetPassword resetPassword);
         IResult CheckVerifyCode(VerificationCodeDto verificationCode);
-        IResult CheckCodeForPasswordReset(ResetPassword resetPassword);
+        IResult CheckCodeForgotPassword(ResetPassword resetPassword);
         IResult DeleteVerifyCode(int userId);
     }
 }

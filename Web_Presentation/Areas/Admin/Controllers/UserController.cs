@@ -169,7 +169,7 @@ namespace Web_Presentation.Areas.Admin.Controllers
                     Url = "/kod-doğrulama"
                 };
                 TempData["UserId"] = verificationCode.UserId;
-                //TempData["Email"] = verificationCode.Email;
+                TempData["Email"] = verificationCode.Email;
                 return Json(response);
             }
             return RedirectToAction("Index", "User", new { area = "Admin" });
@@ -183,7 +183,7 @@ namespace Web_Presentation.Areas.Admin.Controllers
             Entities.Concrete.VerificationCode verificationCode = new Entities.Concrete.VerificationCode
             {
                 UserId = (int)TempData["UserId"],
-                //Email = (string)TempData["Email"]
+                Email = (string)TempData["Email"]
             };
             return View(verificationCode);
         }
@@ -210,7 +210,7 @@ namespace Web_Presentation.Areas.Admin.Controllers
                     Url = "/Admin/User/ChangePassword"
                 };
                 TempData["UserId"] = verificationCode.UserId;
-                //TempData["Email"] = verificationCode.Email;
+                TempData["Email"] = verificationCode.Email;
                 return Json(response);
             }
             else
@@ -231,7 +231,7 @@ namespace Web_Presentation.Areas.Admin.Controllers
             Entities.Concrete.VerificationCode verificationCode = new Entities.Concrete.VerificationCode
             {
                 UserId = (int)TempData["UserId"],
-                //Email = (string)TempData["Email"]
+                Email = (string)TempData["Email"]
             };
             return View(verificationCode);
         }

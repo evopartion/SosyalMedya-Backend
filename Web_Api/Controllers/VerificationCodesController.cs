@@ -2,6 +2,7 @@
 using Entities.DTOs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
 
 namespace Web_Api.Controllers
 {
@@ -19,18 +20,18 @@ namespace Web_Api.Controllers
         [HttpPost("sendcode")]
         public IActionResult SendVerificationCode(VerificationCodeDto verificationCode)
         {
-            var result = _verificationCodeService.SendVerificationCode(verificationCode);
+            var result = _verificationCodeService.SendVerifyCode(verificationCode);
 
             return result.Success ? Ok(result) : BadRequest(result);
         }
 
-        //[HttpPost("sendcodeforpasswordreset")]
-        //public IActionResult SendCodeForPasswordReset(ResetPassword resetPassword)
-        //{
-        //    var result = _verificationCodeService.SendCodeForPasswordReset(resetPassword);
+        [HttpPost("sendcodeforpasswordreset")]
+        public IActionResult SendCodeForgotPassword(ResetPassword resetPassword)
+        {
+            var result = _verificationCodeService.SendCodeForgotPassword(resetPassword);
 
-        //    return result.Success ? Ok(result) : BadRequest(result);
-        //}
+            return result.Success ? Ok(result) : BadRequest(result);
+        }
 
 
         [HttpPost("deleteverifycode")]
@@ -49,13 +50,13 @@ namespace Web_Api.Controllers
             return result.Success ? Ok(result) : BadRequest(result);
         }
 
-        //[HttpPost("checkcodeforpasswordreset")]
-        //public IActionResult CheckCodeForPasswordReset(ResetPassword resetPassword)
-        //{
-        //    var result = _verificationCodeService.CheckCodeForPasswordReset(resetPassword);
+        [HttpPost("checkcodeforpasswordreset")]
+        public IActionResult CheckCodeForPasswordReset(ResetPassword resetPassword)
+        {
+            var result = _verificationCodeService.CheckCodeForgotPassword(resetPassword);
 
-        //    return result.Success ? Ok(result) : BadRequest(result);
-        //}
+            return result.Success ? Ok(result) : BadRequest(result);
+        }
 
     }
 }
