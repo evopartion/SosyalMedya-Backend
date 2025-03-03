@@ -27,7 +27,7 @@ namespace Business.Concrete
 
             var allTopics = _topicDal.GetAll(x => x.Status == true);
 
-            // Geçerlilik süresi dolmuş kodları sil
+            /// Geçerlilik süresi dolmuş kodları sil
             foreach (var topic in allTopics)
             {
                 Topic updatedTopic = new Topic
