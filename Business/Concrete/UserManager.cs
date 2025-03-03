@@ -64,7 +64,7 @@ namespace Business.Concrete
             return new SuccessDataResult<UserDto>(_userDal.GetUsersDtos(u => u.Id == userId).SingleOrDefault(), Messages.UserListed);
         }
 
-        // [ValidationAspect(typeof(UserValidator))]
+        [ValidationAspect(typeof(UserValidator))]
         [LogAspect(typeof(FileLogger))]
         [SecuredOperation("admin,user")]
         [CacheRemoveAspect("IUserService.Get")]
@@ -80,7 +80,7 @@ namespace Business.Concrete
             return new SuccessResult(Messages.UserAdded);
         }
 
-        //[ValidationAspect(typeof(UserValidator))]
+        [ValidationAspect(typeof(UserValidator))]
         [LogAspect(typeof(FileLogger))]
         [SecuredOperation("admin,user")]
         [CacheRemoveAspect("IUserService.Get")]
@@ -96,7 +96,7 @@ namespace Business.Concrete
             return new SuccessResult(Messages.UserUpdated);
         }
 
-        //  [ValidationAspect(typeof(UserDtoValidator))]
+        [ValidationAspect(typeof(UserDtoValidator))]
         [LogAspect(typeof(FileLogger))]
         public IResult UpdateByDto(UserDto userDto)
         {
@@ -122,7 +122,7 @@ namespace Business.Concrete
             return new SuccessResult(Messages.UserUpdated);
         }
 
-        //  [ValidationAspect(typeof(UserValidator))]
+        [ValidationAspect(typeof(UserValidator))]
         public IDataResult<List<OperationClaim>> GetClaims(User user)
         {
             var rulesResult = BusinessRules.Run(CheckIfUserIdExist(user.Id));

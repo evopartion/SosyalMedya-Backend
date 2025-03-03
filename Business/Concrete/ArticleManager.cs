@@ -30,7 +30,7 @@ namespace Business.Concrete
         }
 
         [LogAspect(typeof(FileLogger))]
-        //[ValidationAspect(typeof(ArticleValidator))]
+        [ValidationAspect(typeof(ArticleValidator))]
         [SecuredOperation("admin,user")]
         [CacheRemoveAspect("IArticleService.Get")]
         public IResult Add(Article entity)
@@ -67,7 +67,7 @@ namespace Business.Concrete
             return new SuccessDataResult<List<Article>>(_articleDal.GetAll(), Messages.ArticlesListed);
         }
 
-        // [CacheAspect(10)]
+         [CacheAspect(10)]
         public IDataResult<List<ArticleDetailDto>> GetArticleDetails()
         {
             return new SuccessDataResult<List<ArticleDetailDto>>(_articleDal.GetArticleDetails(), Messages.ArticleWithDetailListed);
@@ -83,14 +83,14 @@ namespace Business.Concrete
             return new SuccessDataResult<List<ArticleDetailDto>>(_articleDal.GetArticleDetails(x => x.UserId == id), Messages.ArticleWithDetailListed);
         }
 
-        //[CacheAspect(10)]
+        [CacheAspect(10)]
         public IDataResult<Article> GetEntityById(int id)
         {
             return new SuccessDataResult<Article>(_articleDal.Get(x => x.Id == id), Messages.ArticleListed);
         }
 
         [LogAspect(typeof(FileLogger))]
-        //[ValidationAspect(typeof(ArticleValidator))]
+        [ValidationAspect(typeof(ArticleValidator))]
         [SecuredOperation("admin,user")]
         [CacheRemoveAspect("IArticleService.Get")]
         public IResult Update(Article entity)
