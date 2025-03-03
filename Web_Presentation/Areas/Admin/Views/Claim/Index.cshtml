@@ -152,7 +152,7 @@
 
                 $.ajax({
                     type: "PUT",
-                    url: "https://localhost:7110/Admin/Claim/ClaimUpdate",
+                    url: "https://localhost:7096/Admin/Claim/ClaimUpdate",
                     data: {
                         Id: $("input[name=Id]").val(),
                         Name: $(this).find("input[name=Name]").val()
@@ -176,7 +176,7 @@
 
                 $.ajax({
                     type: "DELETE",
-                    url: "https://localhost:7110/Admin/Claim/Delete/" + id,
+                    url: "https://localhost:7096/Admin/Claim/Delete/" + id,
                     success: function (response) {
                         Toast(response.message);
 

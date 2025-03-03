@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Core.CrossCuttingConncerns.Logging.Log4Net
+namespace Core.CrossCuttingConncerns.Logging
 {
     public class LogDetail
     {

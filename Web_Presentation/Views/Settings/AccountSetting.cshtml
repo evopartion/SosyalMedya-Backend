@@ -14,19 +14,19 @@
                 <div class="d-flex justify-content-center w-100">
                     @if (Model.ImagePath == "" && Model.Gender == "E")
                     {
-                        <img src="http://localhost:65527/images/default.jpg" width="150" height="150" />
+                        <img src="http://localhost:44811/images/default.jpg" width="150" height="150" />
                     }
                     else if (Model.ImagePath == "" && Model.Gender == "K")
                     {
-                        <img src="http://localhost:65527/images/defaultwoman.png" width="150" height="150" />
+                        <img src="http://localhost:44811/images/defaultwoman.png" width="150" height="150" />
                     }
                     else if (Model.ImagePath == "" && Model.Gender == "B")
                     {
-                        <img src="http://localhost:65527/images/defaultneuter.png" width="150" height="150" />
+                        <img src="http://localhost:44811/images/defaultneuter.png" width="150" height="150" />
                     }
                     else
                     {
-                        <img src="http://localhost:65527/@Model.ImagePath" width="150" height="150" />
+                        <img src="http://localhost:44811/@Model.ImagePath" width="150" height="150" />
                     }
                 </div>
                 <button type="button" class="btn btn-warning fw-bold rounded-1 mx-auto" data-bs-toggle="modal" data-bs-target="#exampleModal">Fotoğrafı Güncelle</button>
@@ -167,7 +167,7 @@
                     if (result.isConfirmed) {
                         $.ajax({
                             type: "DELETE",
-                            url: "https://localhost:7110/Settings/DeleteAccount/" + id,
+                            url: "https://localhost:7048/Settings/DeleteAccount/" + id,
                             success: function (response) {
                                 if (response.success == true) {
                                     Swal.fire({

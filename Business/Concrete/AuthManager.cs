@@ -14,6 +14,7 @@ using DataAccess.Abstract;
 using DataAccess.Concrete.EntityFramework;
 using Entities.Concrete;
 using Entities.DTOs;
+using Entities.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -102,47 +103,47 @@ namespace Business.Concrete
             return new SuccessDataResult<AccessToken>(accessToken, user.FirstName);
         }
 
-        //  [ValidationAspect(typeof(ChangePasswordValidator))]
-        //public async Task<IResult> ChangePassword(ChangePasswordModel updatedUser)
-        //{
-        //    UserForLoginDto checkedUser = new UserForLoginDto
-        //    {
-        //        Email = updatedUser.Email,
-        //        Password = updatedUser.OldPassword
-        //    };
-        //    var loginResult = await Login(checkedUser);
-        //    if (loginResult.Success)
-        //    {
-        //        var user = loginResult.Data;
-        //        byte[] passwordHash, passwordSalt;
-        //        HashingHelper.CreatePasswordHash(updatedUser.NewPassword, out passwordHash, out passwordSalt);
-        //        user.PasswordHash = passwordHash;
-        //        user.PasswordSalt = passwordSalt;
-        //        _userService.Update(user);
-        //        return new SuccessResult(Messages.PasswordChanged);
-        //    }
+        [ValidationAspect(typeof(ChangePasswordValidator))]
+        public async Task<IResult> ChangePassword(ChangePassword updatedUser)
+        {
+            UserForLoginDto checkedUser = new UserForLoginDto
+            {
+                Email = updatedUser.Email,
+                Password = updatedUser.OldPassword
+            };
+            var loginResult = await Login(checkedUser);
+            if (loginResult.Success)
+            {
+                var user = loginResult.Data;
+                byte[] passwordHash, passwordSalt;
+                HashingHelper.CreatePasswordHash(updatedUser.NewPassword, out passwordHash, out passwordSalt);
+                user.PasswordHash = passwordHash;
+                user.PasswordSalt = passwordSalt;
+                _userService.Update(user);
+                return new SuccessResult(Messages.PasswordChanged);
+            }
 
-        //    return new ErrorResult(loginResult.Message);
-        //}
+            return new ErrorResult(loginResult.Message);
+        }
 
-        //public async Task<IResult> AdminChangePassword(ChangePasswordModel changePassword)
-        //{
-        //    var user = _userService.GetUserByMail(changePassword.Email);
+        public async Task<IResult> AdminChangePassword(ChangePassword changePassword)
+        {
+            var user = _userService.GetUserByMail(changePassword.Email);
 
-        //    if (user != null)
-        //    {
-        //        var data = user.Result.Data;
+            if (user != null)
+            {
+                var data = user.Result.Data;
 
-        //        byte[] passwordHash, passwordSalt;
-        //        HashingHelper.CreatePasswordHash(changePassword.NewPassword, out passwordHash, out passwordSalt);
-        //        data.PasswordHash = passwordHash;
-        //        data.PasswordSalt = passwordSalt;
-        //        _userService.Update(data);
-        //        return new SuccessResult(Messages.PasswordChanged);
-        //    }
+                byte[] passwordHash, passwordSalt;
+                HashingHelper.CreatePasswordHash(changePassword.NewPassword, out passwordHash, out passwordSalt);
+                data.PasswordHash = passwordHash;
+                data.PasswordSalt = passwordSalt;
+                _userService.Update(data);
+                return new SuccessResult(Messages.PasswordChanged);
+            }
 
-        //    return new ErrorResult(Messages.UserNotFound);
-        //}
+            return new ErrorResult(Messages.UserNotFound);
+        }
 
         //Business Rules
 
@@ -194,6 +195,11 @@ namespace Business.Concrete
         private bool BaseCheckIfEmailExist(string userEmail)
         {
             return _userDal.GetAll(u => u.Email == userEmail).Any();
+        }
+
+        Task<object?> IAuthService.AdminChangePassword(ChangePassword changePassword)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -275,7 +275,7 @@ namespace Web_Presentation.Areas.Admin.Controllers
         {
             using (var httpClient = _httpClientFactory.CreateClient())
             {
-                var responseMessage = await httpClient.GetAsync("https://localhost:44347/api/Users/getalldto");
+                var responseMessage = await httpClient.GetAsync("https://localhost:44339/api/Users/getalldto");
                 if (responseMessage.IsSuccessStatusCode)
                 {
                     var responseContent = await responseMessage.Content.ReadAsStringAsync();

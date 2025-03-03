@@ -15,7 +15,7 @@ namespace Web_Presentation.Areas.Admin.ViewComponents.GetClaimComponent.cs
 
         public async Task<IViewComponentResult> InvokeAsync()
         {
-            var responseMessage = await _httpClientFactory.CreateClient().GetAsync("http://localhost:65527/api/OperationClaims/getall");
+            var responseMessage = await _httpClientFactory.CreateClient().GetAsync("http://localhost:44811/api/OperationClaims/getall");
             if (responseMessage.IsSuccessStatusCode)
             {
                 var jsonResponse = await responseMessage.Content.ReadAsStringAsync();

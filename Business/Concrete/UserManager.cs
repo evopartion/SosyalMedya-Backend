@@ -1,6 +1,7 @@
 ﻿using Business.Abstract;
 using Business.BusinessAspects.Autofac;
 using Business.Constants;
+using Business.ValidationRules.FluentValidation;
 using Core.Aspects.Autofac.Caching;
 using Core.Aspects.Autofac.Logging;
 using Core.Aspects.Autofac.Validation;
@@ -96,7 +97,7 @@ namespace Business.Concrete
             return new SuccessResult(Messages.UserUpdated);
         }
 
-        [ValidationAspect(typeof(UserDtoValidator))]
+        [ValidationAspect(typeof(UserValidator))]
         [LogAspect(typeof(FileLogger))]
         public IResult UpdateByDto(UserDto userDto)
         {

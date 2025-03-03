@@ -36,11 +36,11 @@
                             <div class="col-1 text-center" style="border-right: 2px solid #ced4da">
                                 @if (item.Image == "")
                                 {
-                                    <img class="img-fluid mb-2" src="http://localhost:65526/images/default.jpg" alt="@item.UserName" title="@item.UserName" />
+                                    <img class="img-fluid mb-2" src="http://localhost:44339/images/default.jpg" alt="@item.UserName" title="@item.UserName" />
                                 }
                                 else
                                 {
-                                    <img class="img-fluid mb-2" src="http://localhost:65526/@item.Image" alt="@item.UserName" title="@item.UserName">
+                                    <img class="img-fluid mb-2" src="http://localhost:44339/@item.Image" alt="@item.UserName" title="@item.UserName">
                                 }
                                 <small style="font-size:0.7em;">@item.CommentDate.ToShortDateString()</small>
                                 <small style="font-size:0.7em;">@item.CommentDate.ToShortTimeString()</small>
@@ -156,7 +156,7 @@
                 e.preventDefault();
                 $.ajax({
                     type: "PUT",
-                    url: "https://localhost:7110/Admin/Home/UpdateComment",
+                    url: "https://localhost:7096/Admin/Home/UpdateComment",
                     data: {
                         Id: $(".update-btn").data("id"),
                         UserId: $("#userId").data("id"),
@@ -184,7 +184,7 @@
                 var id = $(this).data("id");
                 $.ajax({
                     type: "DELETE",
-                    url: "https://localhost:7110/Admin/Home/CommentDelete/" + id,
+                    url: "https://localhost:7096/Admin/Home/CommentDelete/" + id,
                     success: function (response) {
                         Toast(response.message);
 
