@@ -1,4 +1,5 @@
-﻿using Entities.Concrete;
+﻿using ClosedXML.Excel;
+using Entities.Concrete;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -268,7 +269,53 @@ namespace Web_Presentation.Areas.Admin.Controllers
                 return Json(response);
             }
         }
+        [Authorize(Roles = "admin")]
+        [HttpGet]
+        public async Task<IActionResult> ExportUsers()
+        {
+            using (var httpClient = _httpClientFactory.CreateClient())
+            {
+                var responseMessage = await httpClient.GetAsync("https://localhost:44347/api/Users/getalldto");
+                if (responseMessage.IsSuccessStatusCode)
+                {
+                    var responseContent = await responseMessage.Content.ReadAsStringAsync();
+                    var dataResponse = JsonConvert.DeserializeObject<ApiListDataResponse<UserDto>>(responseContent);
 
-        
+                    using (var workbook = new XLWorkbook())
+                    {
+                        var worksheet = workbook.Worksheets.Add("Kullanıcılar");
+                        worksheet.Cell(1, 1).Value = "ID";
+                        worksheet.Cell(1, 2).Value = "Ad";
+                        worksheet.Cell(1, 3).Value = "Soyad";
+                        worksheet.Cell(1, 4).Value = "Email";
+                        worksheet.Cell(1, 5).Value = "TelNo";
+                        worksheet.Cell(1, 6).Value = "Cinsiyet";
+
+                        int row = 2;
+
+                        foreach (var userDto in dataResponse.Data)
+                        {
+                            worksheet.Cell(row, 1).Value = userDto.Id;
+                            worksheet.Cell(row, 2).Value = userDto.FirstName;
+                            worksheet.Cell(row, 3).Value = userDto.LastName;
+                            worksheet.Cell(row, 4).Value = userDto.Email;
+                            worksheet.Cell(row, 5).Value = userDto.PhoneNumber;
+                            worksheet.Cell(row, 6).Value = userDto.Gender;
+                            row++;
+                        }
+
+                        using (var stream = new MemoryStream())
+                        {
+                            workbook.SaveAs(stream);
+                            var content = stream.ToArray();
+                            return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Kullannıcılar.xlsx");
+                        }
+                    }
+                }
+            }
+
+            return RedirectToAction("Index", "Home", new { area = "Admin" });
         }
+
+    }
     }
